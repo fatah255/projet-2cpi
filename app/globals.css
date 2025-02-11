@@ -20,6 +20,9 @@
   .text-balance {
     text-wrap: balance;
   }
+  .drop-shadow{
+    filter: drop-shadow(6px 8px 10px rgba(0, 0, 0, 0.5));
+  }
 }
 
 @layer base {
@@ -77,6 +80,7 @@
     --chart-5: 340 75% 55%;
   }
 }
+
 
 @layer base {
   * {
