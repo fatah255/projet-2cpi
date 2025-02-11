@@ -9,9 +9,19 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+		screens: {
+			'xs': '320px',
+		},
+		fontFamily: {
+			'irish-grover': ['"Irish Grover"','cursive'],
+		},
+		backgroundOpacity: {
+			'10': '0.4',
+		},
   		backgroundImage: {
   			'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-  			'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))'
+  			'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+			'signUp-button': 'linear-gradient(107.32deg, #E6B9DE 21.24%, #4942E4 90.24%)',
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
@@ -19,6 +29,10 @@ const config: Config = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
+		    'navbar_color': '#E6B9DE',
+			backgroundImage: {
+				'gradient-custom': 'linear-gradient(107.32deg, #E6B9DE 21.24%, #4942E4 90.24%)',
+			  },
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -58,8 +72,24 @@ const config: Config = {
   				'3': 'hsl(var(--chart-3))',
   				'4': 'hsl(var(--chart-4))',
   				'5': 'hsl(var(--chart-5))'
-  			}
-  		}
+  			},
+			borderColor: {
+				'custom-blue': '#11009E',
+			},
+			borderWidth: {
+				'3': '3px',
+			},
+  		},
+		container: {
+			center: true,
+			padding: {
+				DEFAULT: '1rem',
+				sm: '2rem',
+				lg: '4rem',
+				xl: '5rem',
+				'2xl': '6rem',
+			},
+		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
