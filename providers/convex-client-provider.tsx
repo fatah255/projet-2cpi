@@ -11,6 +11,7 @@ import {
 
 import { Children } from "react";
 import { Loading } from "@/components/auth/loading";
+import Hero from "@/app/(dashboard)/_components/LandingPage/Hero";
 
 interface ConvexClientProviderProps {
   children: React.ReactNode;
@@ -31,6 +32,9 @@ export const ConvexClientProvider = ({
           <AuthLoading>
             <Loading />
           </AuthLoading>
+          <Unauthenticated>
+            <Hero />
+          </Unauthenticated>
         </ConvexProviderWithClerk>
       </ClerkProvider>
     </>
