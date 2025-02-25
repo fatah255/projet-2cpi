@@ -10,7 +10,7 @@ const inter = Inter({
 const Navbar = () => {
   return (
     <>
-        <nav className='bg-navbar_color bg-opacity-5  relative  '> 
+        <nav className=' relative  '> 
            <motion.div 
            initial={{opacity:0,y:-50}}
            animate={{opacity:1,y:0}}
@@ -20,8 +20,8 @@ const Navbar = () => {
                 <h1 className='text-[#11009E] text-5xl z-30'>Whiteboard</h1>
               </div>
                 <div className='flex space-x-4 border-borderColor-custom-blue border-[3px] rounded-[20px] py-1 px-4 font-normal max-w-[378px] max-h-[76px] '>
-                <div className='py-1 px-4 font-bold text-[#11009E] text-xl'><button>Log in</button></div>
-                <div className='rounded-full font-bold text-white py-1 px-4 hover:opacity-75 bg-signUp-button text-xl'>
+                <div className='py-1 px-4 font-bold text-[#11009E] text-xl hover:opacity-60'><button>Log in</button></div>
+                <div className='rounded-full font-bold text-white py-1 px-4 hover:opacity-85 bg-signUp-button text-xl'>
                   <button>Sign Up</button>
                 </div>
                 </div>
