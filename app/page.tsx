@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
       {/* hna landing page  */}
-      <div className={`${irish_grover.className} ${inter.className}`}>
+      <div className={`${irish_grover.className} ${inter.className} bg-navbar_color bg-opacity-20`}>
         <Hero/>
 
       </div>
