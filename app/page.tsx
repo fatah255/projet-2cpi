@@ -1,10 +1,14 @@
 "use client";
 import { Irish_Grover,Inter } from 'next/font/google';
 import { Button } from "@/components/ui/Button";
-import Hero from '@/components/Hero';
+import Hero from "./(landingPage)/_components/Hero";
 const irish_grover = Irish_Grover({ weight: '400', subsets: ['latin'] });
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+});
 export default function Home() {
+
   return (
     <>
       {/* hna landing page  */}
