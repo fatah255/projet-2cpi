@@ -1,8 +1,6 @@
 import React from 'react';
 import Navbar from './Navbar';
 import Image from 'next/image';
-import boardImage from "../app/assets/board.png";
-import Blob from "../app/assets/blob.svg";
 import  { motion } from 'framer-motion';
 import { Irish_Grover } from 'next/font/google';
 const irish_grover = Irish_Grover({ weight: '400', subsets: ['latin'] });
@@ -36,7 +34,12 @@ const Hero = () => {
         <div className=' flex flex-col md:gap-10  justify-center py-14 md:py-0  z-20'>
           
            <div className='  xs:space-y-2  '>  
-           <Image src={Blob} alt="" className='absolute -top-96 -left-96  w-[1500px]  z-[1]  -rotate-12 hidden  md:block '/>
+           <Image 
+           src="/blob.svg" 
+           alt="whiteboard" 
+           width={1500}
+           height={1500}
+           className='absolute -top-96 -left-96  w-[1500px]  z-[1]  -rotate-12 hidden  md:block '/>
             
             <div className='text-center md:text-left flex flex-col gap-5'>
               <motion.h1 
@@ -68,7 +71,12 @@ const Hero = () => {
         animate={{x:0,opacity:1}}
         transition={{duration:0.6,delay:0.2,ease:"easeInOut"}}
         className='flex justify-center items-center relative z-20 '>
-          <Image src={boardImage} alt='board' className='w-[800px] relative z-20 drop-shadow' />
+          <Image 
+          src="/board.png" 
+          alt='Board' 
+          width={800}
+          height={800}
+          className='w-[800px] relative z-20 drop-shadow' />
           
         </motion.div>
 
@@ -78,6 +86,7 @@ const Hero = () => {
           <motion.div 
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
           className="bg-white p-6 rounded-lg shadow-md max-w-md">
               <h3 className="text-xl font-bold border-b-2 border-blue-500 pb-2">Effortless Teaching, Limitless Learning</h3>
               <p className="mt-4">Create your virtual classroom in seconds—no complicated setup, just a simple and intuitive space for seamless teaching. Focus on delivering great lessons while The Wightboard keeps everything organized for you and your students.</p>
@@ -85,6 +94,7 @@ const Hero = () => {
           <motion.div 
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
           className="bg-white p-6 rounded-lg shadow-md max-w-md">
               <h3 className="text-xl font-bold border-b-2 border-blue-500 pb-2">Stay Focused, Never Miss a Word</h3>
               <p className="mt-4">Forget the stress of copying notes while the teacher explains. The Wightboard automatically captures every whiteboard update, allowing you to focus on learning. Review everything later at your own pace—all in just one click.</p>
@@ -191,7 +201,7 @@ const Hero = () => {
           </div>
       </div>
 
-      <section className="bg-pink-100 py-16 px-6">
+      <section className="bg-pink-100 py-16 px-6 mt-4">
           <div className="max-w-4xl mx-auto text-center">
               <h2 className="text-3xl font-bold text-blue-700">About Us</h2>
               <p className="mt-4 text-gray-700 leading-relaxed">
