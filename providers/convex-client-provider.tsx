@@ -12,6 +12,8 @@ import {
 import { Children } from "react";
 import { Loading } from "@/components/auth/loading";
 
+import HomePage from "@/components/HomePage";
+
 interface ConvexClientProviderProps {
   children: React.ReactNode;
 }
@@ -32,7 +34,7 @@ export const ConvexClientProvider = ({
             <Loading />
           </AuthLoading>
           <Unauthenticated>
-            <SignIn />
+            <HomePage />
           </Unauthenticated>
         </ConvexProviderWithClerk>
       </ClerkProvider>
