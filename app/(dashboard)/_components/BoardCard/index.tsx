@@ -7,6 +7,9 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import Footer from "./Footer";
 import Actions from "@/components/global/actions";
 import { MoreHorizontal } from "lucide-react";
+import { api } from "@/convex/_generated/api";
+import { useMutation } from "convex/react";
+import { toast } from "sonner";
 
 interface BoardCardProps {
   title: string;
@@ -33,6 +36,19 @@ const BoardCard = ({
   //to check the owner of the board
   const authorLabel = userId === authorId ? "You" : authorName;
   const timeAgo = formatDistanceToNow(createdAt, { addSuffix: true });
+
+  const onFavorite = useMutation(api.board.favorite);
+  const onUnfavorite = useMutation(api.board.unfavorite);
+  const toggleFavorite = () => {
+    if (isFavorite) {
+      //@ts-ignore
+      onUnfavorite({ id }).catch(() => toast.error("Failed to unfavorite"));
+    } else {
+      //@ts-ignore
+      onFavorite({ id, orgId }).catch(() => toast.error("Failed to favorite"));                   
+    }
+  };
+
   return (
     <Link href={`/board/${id}`}>
       <div className="group aspect-[100/127] border rounded-lg flex flex-col justify-between overflow-hidden">
@@ -53,7 +69,7 @@ const BoardCard = ({
           authorLabel={authorLabel}
           isFavorite={isFavorite}
           title={title}
-          onClick={() => {}}
+          onClick={toggleFavorite}
           disabled={false}
         />
       </div>

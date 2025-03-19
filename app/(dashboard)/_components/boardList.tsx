@@ -13,13 +13,13 @@ interface BoardListProps {
   orgId: string;
   query: {
     search?: string;
-    favorites?: boolean;
+    favorites?: string;
   };
 }
 
 const BoardList = ({ orgId, query }: BoardListProps) => {
   //getting the boards of the current organization
-  const data = useQuery(api.boards.get, { orgId });
+  const data = useQuery(api.boards.get, { orgId, ...query });
 
   // undefind beacause convex return undefined when loading and null when empty
   if (data === undefined) {
@@ -76,7 +76,7 @@ const BoardList = ({ orgId, query }: BoardListProps) => {
             authorName={board.authorName}
             createdAt={board._creationTime}
             orgId={board.orgId}
-            isFavorite={false}
+            isFavorite={board.isFavorite}
           />
         ))}
       </div>

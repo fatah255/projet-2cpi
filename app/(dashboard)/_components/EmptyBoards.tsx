@@ -6,9 +6,11 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useOrganization } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 //a component that renders in the case of empty boards
 const EmptyBoards = () => {
+  const router = useRouter();
   //getting the create mutation that we define in the api endpoint
   //this mutation is used to create a new board
   const { organization } = useOrganization();
@@ -23,6 +25,7 @@ const EmptyBoards = () => {
       .then((id) => {
         toast.success("Board created");
         //redirecting to the newly created board
+        router.push(`/board/${id}`);
       }) //showing an error toast if the board creation fails
       .catch(() => {
         toast.error("Failed to create");

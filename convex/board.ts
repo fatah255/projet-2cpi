@@ -1,4 +1,4 @@
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
 const images = [
@@ -53,6 +53,19 @@ export const remove = mutation({
     if (!identity) {
       throw new Error("Unauthorized");
     }
+    const userId = identity.subject;
+
+    //check if the board is favorite if exist we delete also from favorites table
+    const existingFavorite = await ctx.db
+      .query("userFavorites")
+      .withIndex("by_user_board", (q) =>
+        q.eq("userId", userId).eq("boardId", args.id)
+      )
+      .unique();
+    if (existingFavorite) {
+      await ctx.db.delete(existingFavorite._id);
+    }
+
     //remove the board from the database
     await ctx.db.delete(args.id);
   },
@@ -102,8 +115,8 @@ export const favorite = mutation({
     //check if the board is already favorited if exist we return it
     const existingFavorite = await ctx.db
       .query("userFavorites")
-      .withIndex("byUserOrgBoard", (q) =>
-        q.eq("userId", userId).eq("orgId", args.orgId).eq("boardId", board._id)
+      .withIndex("by_user_board", (q) =>
+        q.eq("userId", userId).eq("boardId", board._id)
       )
       .unique();
 
@@ -140,7 +153,7 @@ export const unfavorite = mutation({
     //check if the board is favorite if exist we return it
     const existingFavorite = await ctx.db
       .query("userFavorites")
-      .withIndex("byUserBoard", (q) =>
+      .withIndex("by_user_board", (q) =>
         q.eq("userId", userId).eq("boardId", board._id)
       )
       .unique();
@@ -153,6 +166,16 @@ export const unfavorite = mutation({
     //delete the favorite board from the database (from the userFavorites table)
     await ctx.db.delete(existingFavorite._id);
 
+    return board;
+  },
+});
+
+export const get = query({
+  args: {
+    id: v.id("boards"),
+  },
+  handler: async (ctx, args) => {
+    const board = await ctx.db.get(args.id);
     return board;
   },
 });

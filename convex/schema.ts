@@ -23,13 +23,13 @@ export default defineSchema({
     userId: v.string(),
     boardId: v.id("boards"),
   }) //an index that points to the boards IDs
-    .index("byBoard", ["boardId"])
+    .index("by_board", ["boardId"])
     //an index that points to the user organizations
-    .index("byUserOrg", ["userId", "orgId"])
+    .index("by_user_org", ["userId", "orgId"])
     //an index that points to the user IDs
-    .index("byUser", ["userId"])
-    //an index that points to the user organizations boards
-    .index("byUserOrgBoard", ["userId", "orgId", "boardId"])
+    .index("by_user", ["userId"])
     //an index that points to the user boards
-    .index("byUserBoard", ["userId", "boardId"]),
+    .index("by_user_board", ["userId", "boardId"])
+    //an index that points to the user organizations boards
+    .index("by_user_org_board", ["userId", "orgId", "boardId"]),
 });
