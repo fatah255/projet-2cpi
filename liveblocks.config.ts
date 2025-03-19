@@ -3,8 +3,7 @@
 import { createClient } from "@liveblocks/client";
 
 export const client = createClient({
-  publicApiKey:
-    "pk_dev_TOoB8gNl94gCAc1SYIsN8jwo0yegrHM4_MqdRkXDOnK_WrNOVjwNLmRLe-5IYqJk",
+  authEndpoint: "/api/liveblocks-auth",
 });
 
 declare global {
