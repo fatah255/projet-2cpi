@@ -79,12 +79,11 @@ export type XYWH = {
   width: number;
   height: number;
 };
-
-export type Side = {
-  top: 1;
-  bottom: 2;
-  left: 4;
-  right: 8;
+export enum Side {
+  Top = 1,
+  Bottom = 2,
+  Left = 4,
+  Right = 8,
 };
 
 export type CanvasState =
@@ -130,3 +129,10 @@ export enum CanvasMode {
   Pencil,
   Inserting,
 }
+
+export type Layer =
+  | RectangleLayer
+  | EllipseLayer
+  | TextLayer
+  | NoteLayer
+  | PathLayer;
