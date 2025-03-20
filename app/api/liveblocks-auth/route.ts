@@ -25,7 +25,7 @@ export const POST = async (request: Request) => {
 
   //check if the user is not from the current organization to refuse it
   if (board?.orgId !== authorization.orgId) {
-    return new Response("Unauthorized");
+    return new Response("Unauthorized", { status: 403 });
   }
 
   //send the user information to the client side
