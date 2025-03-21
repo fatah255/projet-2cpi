@@ -5,6 +5,7 @@ import { memo } from "react";
 import { Rectangle } from "./Rectangle";
 import { Ellipse } from "./Ellipse";
 import { Text } from "./Text";
+import { Note } from "./Note";
 
 interface LayerPreviewProps {
   layerId: string;
@@ -19,9 +20,23 @@ export const LayerPreview = memo(
     if (!layer) return null;
 
     switch (layer.type) {
+      case LayerType.Note:
+        return (
+          <Note
+            selectionColor={selectionColor}
+            id={layerId}
+            layer={layer}
+            onPointerDown={onLayerPointerDown}
+          />
+        );
       case LayerType.Text:
         return (
-          <Text id={layerId} layer={layer} onPointerDown={onLayerPointerDown} />
+          <Text
+            selectionColor={selectionColor}
+            id={layerId}
+            layer={layer}
+            onPointerDown={onLayerPointerDown}
+          />
         );
       case LayerType.Ellipse:
         return (
@@ -29,6 +44,7 @@ export const LayerPreview = memo(
             id={layerId}
             layer={layer}
             onPointerDown={onLayerPointerDown}
+            selectionColor={selectionColor}
           />
         );
       case LayerType.Rectangle:
