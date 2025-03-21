@@ -1,8 +1,8 @@
 import {
   Tooltip,
   TooltipContent,
-  TooltipTrigger,
   TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui/Tooltip";
 
 export interface HintProps {
@@ -27,7 +27,7 @@ export const Hint = ({
       <Tooltip delayDuration={100}>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent
-          className="bg-black text-white border-black"
+          className="text-white bg-black border-black"
           side={side}
           align={align}
           sideOffset={sideOffset}

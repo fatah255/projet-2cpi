@@ -7,7 +7,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 import { Hint } from "@/components/hint";
 import { useRenameModal } from "@/store/use-rename";

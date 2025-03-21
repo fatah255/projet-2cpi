@@ -1,7 +1,7 @@
 "use client";
 import { Hint } from "@/components/hint";
 import { LucideIcon } from "lucide-react";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/ui/Button";
 
 interface ToolButtonProps {
   label: string;
