@@ -1,0 +1,350 @@
+/**************************************
+ * 1. MAIN WRAPPER
+ **************************************/
+.mainWrapper {
+  /* This wraps everything (navbar + hero).
+     Approximate your "bg-navbar_color bg-opacity-20". */
+  background-color: rgba(241, 245, 249, 0.2);
+}
+
+/**************************************
+ * 2. NAVBAR
+ **************************************/
+.navbar {
+  position: relative;
+}
+
+/* The inner nav container (like .mx-auto, .flex, etc.) */
+.navInner {
+  margin: 0 auto;
+  max-width: 1200px; /* container width so it lines up with the hero */
+  padding: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem; /* gap-3 */
+  z-index: 30;
+}
+
+/* The "W" + "Whiteboard" */
+.navLogo {
+  display: flex;
+  gap: 1.25rem; /* gap-5 */
+  align-items: center;
+}
+
+/* "W" icon => text-4xl, bg-[#11009E], etc. */
+.navIcon {
+  font-style: normal;
+  font-weight: bold;
+  background-color: #11009e;
+  color: #f0f9ff; /* text-sky-50 */
+  border-radius: 1.5rem; /* rounded-3xl */
+  padding: 0.5rem; /* p-2 => ~ */
+  font-size: 2.25rem; /* text-4xl => 2.25rem */
+  width: 3.75rem; /* w-15 => custom */
+  height: 3.25rem; /* h-13 => custom */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+}
+
+/* "Whiteboard" => text-5xl => 3rem */
+.navTitle {
+  color: #11009e;
+  font-size: 3rem;
+  z-index: 30;
+}
+
+/* The container for "Log in" / "Sign Up" => border, rounded, etc. */
+.navButtons {
+  display: flex;
+  gap: 1rem; /* space-x-4 */
+  border: 3px solid #3b82f6; /* your "borderColor-custom-blue" */
+  border-radius: 20px; /* rounded-[20px] */
+  padding: 0.25rem 1rem; /* py-1 px-4 */
+  max-width: 378px;
+  max-height: 76px;
+}
+
+/* Log in button => text-xl, text-[#11009E], hover:opacity-60 */
+.loginButton {
+  padding: 0.25rem 1rem;
+  font-weight: bold;
+  color: #11009e;
+  font-size: 1.25rem; /* text-xl */
+  transition: opacity 0.2s ease-in-out;
+}
+
+.loginButton:hover {
+  opacity: 0.6;
+}
+
+/* Sign up button => text-xl, text-white, bg-pink, rounded-full, hover:opacity-85 */
+.signUpButton {
+  border-radius: 9999px; /* rounded-full */
+  font-weight: bold;
+  color: #ffffff;
+  padding: 0.25rem 1rem;
+  background-color: #ec4899;
+  font-size: 1.25rem;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.signUpButton:hover {
+  opacity: 0.85;
+}
+
+/**************************************
+ * 3. HERO SECTION
+ **************************************/
+.heroSection {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Outer container => centers content + sets max width */
+.container {
+  margin: 0 auto;
+  max-width: 1200px; /* match navbar width */
+  padding: 0 1rem; /* small side padding */
+}
+
+/* The grid => grid-cols-1 md:grid-cols-2, min-h-[650px] */
+.heroGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 650px;
+}
+
+@media (min-width: 768px) {
+  .heroGrid {
+    grid-template-columns: 1fr 1fr; /* md:grid-cols-2 */
+  }
+}
+
+/* Left side => flex-col, justify-center, negative top padding, etc. */
+.leftSide {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 20;
+
+  /* You had py-14 on small screens, removing it can help match the screenshot’s spacing
+     or you can keep it if you prefer more vertical space. 
+     If you want the exact spacing, uncomment:
+  */
+  padding-top: 3.5rem; /* py-14 => 3.5rem x4=14 */
+  padding-bottom: 3.5rem;
+}
+
+@media (min-width: 768px) {
+  .leftSide {
+    /* md:gap-10 => 2.5rem => if you want more vertical spacing between heading + subheading */
+    gap: 2.5rem;
+    /* remove extra top/bottom padding on medium+ if you want a tighter look
+       or comment out if you prefer more spacing:
+    */
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+/* Blob + text wrapper => position relative so the blob is behind text */
+.blobWrapper {
+  position: relative;
+}
+
+/* The big blob => absolute -top-96 -left-96 w-[1500px] z-[1] -rotate-12 hidden md:block */
+.blobImage {
+  position: absolute;
+  top: -24rem; /* -top-96 => 24rem */
+  left: -24rem; /* -left-96 => 24rem */
+  width: 1500px;
+  z-index: 1;
+  transform: rotate(-12deg);
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .blobImage {
+    display: block; /* md:block */
+  }
+}
+
+/* The text => text-center md:text-left flex-col gap-5
+   We'll ensure it doesn't get too wide by adding a max-width.
+*/
+.textBlock {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* gap-5 => 1.25rem */
+  max-width: 550px; /* so the lines match your screenshot more closely */
+}
+
+@media (min-width: 768px) {
+  .textBlock {
+    text-align: left; /* md:text-left */
+  }
+}
+
+/* H1 => text-[#11009E] text-3xl lg:text-5xl font-bold !leading-snug z-20 */
+.heroTitle {
+  color: #11009e;
+  font-size: 1.875rem; /* text-3xl => 1.875rem */
+  font-weight: bold;
+  line-height: 1.2; /* !leading-snug => ~1.2 */
+  position: relative;
+  z-index: 20;
+}
+
+@media (min-width: 1024px) {
+  .heroTitle {
+    font-size: 3rem; /* lg:text-5xl => 3rem */
+  }
+}
+
+/* p => text-[#11009E] text-lg lg:text-2xl z-20 */
+.heroSubtitle {
+  color: #11009e;
+  font-size: 1.125rem; /* text-lg => 1.125rem */
+  position: relative;
+  z-index: 20;
+  line-height: 1.6; /* slightly relaxed so text doesn't jam together */
+}
+
+@media (min-width: 1024px) {
+  .heroSubtitle {
+    font-size: 1.5rem; /* lg:text-2xl => 1.5rem */
+  }
+}
+
+/* Right side => board image */
+.rightSide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 20;
+}
+
+.boardImage {
+  width: 800px; /* w-[800px] */
+  position: relative;
+  z-index: 20;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.25));
+}
+
+/**************************************
+ * 4. BOTTOM CONTENT (cards + about)
+ **************************************/
+.bottomContent {
+  margin-top: 2rem; /* optional spacing from hero */
+  padding-bottom: 2rem; /* extra spacing if desired */
+  font-family: sans-serif; /* match "font-sans" */
+  position: relative;
+  z-index: 20;
+}
+
+/* Cards row => flex, wrap, center, gap-6, mt-6 */
+.cardsRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem; /* gap-6 => 1.5rem */
+  margin-top: 1.5rem; /* mt-6 => 1.5rem */
+}
+
+/* Each card => bg-white, p-6, rounded-lg, shadow-md, max-w-md */
+.cardBox {
+  background-color: #ffffff;
+  padding: 1.5rem; /* p-6 => 1.5rem */
+  border-radius: 0.5rem; /* rounded-lg */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+  max-width: 28rem; /* max-w-md => 28rem */
+}
+
+.cardTitle {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: bold;
+  border-bottom: 2px solid #3b82f6; /* border-blue-500 */
+  padding-bottom: 0.5rem; /* pb-2 => 0.5rem */
+}
+
+.cardText {
+  margin-top: 1rem; /* mt-4 => 1rem */
+}
+
+/* Subheading => text-lg, font-semibold, border-b, border-blue-700, pb-2 */
+.cardSubtitle {
+  font-size: 1.125rem; /* text-lg => 1.125rem */
+  font-weight: 600; /* font-semibold */
+  border-bottom: 1px solid #1d4ed8; /* border-blue-700 */
+  padding-bottom: 0.5rem;
+}
+
+/* The ul => mt-4 space-y-4 => margin-top + vertical spacing */
+.listBlock {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 => 1rem */
+}
+
+/* li => p-4 bg-pink-200 border-l-4 border-blue-700 shadow-sm */
+.listItem {
+  padding: 1rem;
+  background-color: #fbcfe8; /* pink-200 */
+  border-left: 4px solid #1d4ed8; /* border-blue-700 */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* shadow-sm */
+}
+
+.listItemTitle {
+  font-weight: bold;
+}
+
+.listItemText {
+  font-size: 0.875rem; /* text-sm => 0.875rem */
+}
+
+/**************************************
+ * ABOUT US SECTION
+ **************************************/
+.aboutSection {
+  background-color: #fce7f3; /* bg-pink-100 */
+  padding: 4rem 1.5rem; /* py-16 px-6 => 4rem + 1.5rem */
+  margin-top: 2rem; /* mt-4 => 1rem or more if needed */
+}
+
+.aboutContainer {
+  max-width: 64rem; /* max-w-4xl => 1024px */
+  margin: 0 auto;
+  text-align: center;
+}
+
+.aboutTitle {
+  font-size: 1.875rem; /* text-3xl => 1.875rem */
+  font-weight: bold;
+  color: #1d4ed8; /* text-blue-700 */
+}
+
+.aboutParagraph {
+  margin-top: 1rem;
+  color: #4b5563; /* text-gray-700 */
+  line-height: 1.625; /* leading-relaxed => ~1.625 */
+}
+
+.blueText {
+  font-weight: 600; /* font-semibold */
+  color: #1d4ed8; /* text-blue-700 */
+}
+
+.aboutEmphasis {
+  margin-top: 1.5rem; /* mt-6 => 1.5rem */
+  color: #4b5563;
+  font-weight: 600; /* font-semibold */
+}

@@ -8,6 +8,12 @@ import { OrganizationSwitcher } from "@clerk/nextjs";
 import { Button } from "@/components/ui/Button";
 import { LayoutDashboard, Star } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { Irish_Grover, Inter } from "next/font/google";
+const irish_grover = Irish_Grover({ weight: "400", subsets: ["latin"] });
+const inter = Inter({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+});
 
 const font = Poppins({ subsets: ["latin"], weight: ["400"] });
 export const RoomSideBar = () => {
@@ -18,7 +24,9 @@ export const RoomSideBar = () => {
       <Link href="/">
         <div className="flex items-center gap-x-2">
           <Image src="/logo.svg" alt="logo" width={60} height={60} />
-          <span className={cn("font-bold text-xl", font.className)}>
+          <span
+            className={cn("text-[#11009E] text-2xl", irish_grover.className)}
+          >
             WHITEBOARD
           </span>
         </div>
@@ -76,3 +84,5 @@ export const RoomSideBar = () => {
     </div>
   );
 };
+
+// ` text-[#11009E] text-5xl ${irish_grover.className}`;

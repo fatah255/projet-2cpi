@@ -12,6 +12,8 @@ import {
 import { Children } from "react";
 import { Loading } from "@/components/auth/loading";
 
+import MergedHeroNavbar from "@/app/(landingPage)/MergedHeroNavbar";
+
 interface ConvexClientProviderProps {
   children: React.ReactNode;
 }
@@ -32,7 +34,10 @@ export const ConvexClientProvider = ({
             <Loading />
           </AuthLoading>
           <Unauthenticated>
-            <SignIn />
+            {/* <SignIn /> */}
+            <main>
+              <MergedHeroNavbar />
+            </main>
           </Unauthenticated>
         </ConvexProviderWithClerk>
       </ClerkProvider>

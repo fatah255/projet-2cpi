@@ -13,6 +13,12 @@ import { Hint } from "@/components/hint";
 import { useRenameModal } from "@/store/use-rename";
 import Actions from "@/components/global/actions";
 import { Menu } from "lucide-react";
+import { Irish_Grover, Inter } from "next/font/google";
+const irish_grover = Irish_Grover({ weight: "400", subsets: ["latin"] });
+const inter = Inter({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+});
 interface InfoProps {
   boardId: string;
 }
@@ -37,8 +43,8 @@ const Info = ({ boardId }: InfoProps) => {
               <Image src="/logo.svg" alt="logo" height={40} width={40} />
               <span
                 className={cn(
-                  "text-xl font-semibold ml-2 text-blue-700 ",
-                  font.className
+                  "text-[#11009E] text-2xl",
+                  irish_grover.className
                 )}
               >
                 WHITEBOARD
