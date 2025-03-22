@@ -5,6 +5,7 @@ import { memo } from "react";
 import { LayerType, Side, XYWH } from "@/types/canvas";
 import { useSelf, useStorage } from "@liveblocks/react/suspense";
 import { useSelectionBounds } from "@/hooks/useSelectionBounds";
+import { useOrganization } from "@clerk/nextjs";
 
 interface SelectionBoxProps {
   onResizeHandlePointerDown: (corner: Side, initialBounds: XYWH) => void;
@@ -14,6 +15,10 @@ const HANDLE_WIDTH = 8;
 
 export const SelectionBox = memo(
   ({ onResizeHandlePointerDown }: SelectionBoxProps) => {
+    // check if the user is an admin
+    const { membership } = useOrganization();
+    const isAdmin = membership && membership?.role === "org:admin";
+    if (!isAdmin) return null;
     const soleLayerId = useSelf((me) =>
       me.presence.selection.length === 1 ? me.presence.selection[0] : null
     );

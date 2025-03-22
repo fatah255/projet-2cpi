@@ -8,6 +8,7 @@ import { Text } from "./Text";
 import { Note } from "./Note";
 import { Path } from "./Path";
 import { colorToCss } from "@/lib/utils";
+import { useOrganization } from "@clerk/nextjs";
 
 interface LayerPreviewProps {
   layerId: string;
@@ -18,8 +19,14 @@ interface LayerPreviewProps {
 
 export const LayerPreview = memo(
   ({ layerId, onLayerPointerDown, selectionColor }: LayerPreviewProps) => {
+    // check if the user is an admin
+    const { membership } = useOrganization();
+    const isAdmin = membership && membership?.role === "org:admin";
+    //get the layers infos
     const layer = useStorage((root) => root.layers.get(layerId));
     if (!layer) return null;
+    //if the user who selected the layer is not admin we don't want to know
+    selectionColor = !isAdmin ? selectionColor : "";
 
     switch (layer.type) {
       case LayerType.Path:

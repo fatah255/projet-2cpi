@@ -42,6 +42,7 @@ import { Path } from "./Path";
 import { useDisableScroll } from "@/hooks/useDesableScroll";
 import { useEffect } from "react";
 import { useDeleteLayers } from "@/hooks/useDeleteLayers";
+import { useOrganization } from "@clerk/nextjs";
 
 const MAX_LAYERS = 100;
 
@@ -50,6 +51,9 @@ interface CanvasProps {
 }
 
 const Canvas = ({ boardId }: CanvasProps) => {
+  // check if the user is an admin
+  const { membership } = useOrganization();
+  const isAdmin = membership && membership?.role === "org:admin";
   //to know what we are doing on the canvas
   const [canvasState, setCanvasState] = useState<CanvasState>({
     mode: CanvasMode.None,
@@ -190,7 +194,9 @@ const Canvas = ({ boardId }: CanvasProps) => {
       } else if (canvasState.mode === CanvasMode.SelectionNet) {
         updateSelectionNet(current, canvasState.origin);
       } else if (canvasState.mode === CanvasMode.translating) {
-        translateSelectedLayers(current);
+        if (isAdmin) {
+          translateSelectedLayers(current);
+        }
       } else if (canvasState.mode === CanvasMode.resizing) {
         resizeSelectedLayer(current);
       } else if (canvasState.mode === CanvasMode.Pencil) {
@@ -456,15 +462,20 @@ const Canvas = ({ boardId }: CanvasProps) => {
     <main className="w-full h-full relative bg-neutral-100 touch-none">
       <Info boardId={boardId} />
       <Participants />
-      <Toolbar
-        canvasState={canvasState}
-        setCanvasState={setCanvasState}
-        undo={history.undo}
-        redo={history.redo}
-        canUndo={canUndo}
-        canRedo={canRedo}
-      />
-      <SelectionTools camera={camera} setLastUsedColor={setLastUsedColor} />
+      {isAdmin && (
+        <>
+          {" "}
+          <Toolbar
+            canvasState={canvasState}
+            setCanvasState={setCanvasState}
+            undo={history.undo}
+            redo={history.redo}
+            canUndo={canUndo}
+            canRedo={canRedo}
+          />
+          <SelectionTools camera={camera} setLastUsedColor={setLastUsedColor} />
+        </>
+      )}
       <svg
         onWheel={onWheel}
         onPointerMove={onPointerMove}
