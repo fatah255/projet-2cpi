@@ -15,6 +15,13 @@ import Actions from "@/components/global/actions";
 import { Menu } from "lucide-react";
 import { Irish_Grover, Inter } from "next/font/google";
 const irish_grover = Irish_Grover({ weight: "400", subsets: ["latin"] });
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import {
+  useBroadcastEvent,
+  useEventListener,
+} from "@liveblocks/react/suspense";
+
 const inter = Inter({
   weight: ["400", "700"],
   subsets: ["latin"],
@@ -25,6 +32,15 @@ interface InfoProps {
 
 const font = Poppins({ subsets: ["latin"], weight: ["400"] });
 const Info = ({ boardId }: InfoProps) => {
+  const broadcastEvent = useBroadcastEvent();
+  const router = useRouter();
+  useEventListener(({ event }) => {
+    //@ts-ignore
+    if (event.type === "redirect" && event.to) {
+      //@ts-ignore
+      router.push(event.to);
+    }
+  });
   const { onOpen } = useRenameModal();
   const data = useQuery(api.board.get, {
     id: boardId as Id<"boards">,
@@ -70,7 +86,13 @@ const Info = ({ boardId }: InfoProps) => {
       </Hint>
       {/* A seperator */}
       <div className="text-neutral-300 px-1.5">|</div>
-      <Actions id={data._id} title={data.title} side="bottom" sideOffset={10}>
+      <Actions
+        broadcastEvent={broadcastEvent}
+        id={data._id}
+        title={data.title}
+        side="bottom"
+        sideOffset={10}
+      >
         <div>
           <Hint label="Main Menu" side="bottom" sideOffset={10}>
             <div>

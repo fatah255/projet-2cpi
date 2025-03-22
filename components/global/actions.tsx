@@ -16,6 +16,8 @@ import ConfirmModal from "./ConfirmModal";
 import { Button } from "../ui/Button";
 import { useRenameModal } from "@/store/use-rename";
 import { useOrganization } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface actionsProps {
   children: React.ReactNode;
@@ -23,9 +25,20 @@ interface actionsProps {
   sideOffset?: DropdownMenuContentProps["sideOffset"];
   id: string;
   title: string;
+  broadcastEvent: any;
 }
 
-const Actions = ({ children, side, sideOffset, id, title }: actionsProps) => {
+const Actions = ({
+  children,
+  side,
+  sideOffset,
+  id,
+  title,
+  broadcastEvent,
+}: actionsProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
+
   const { onOpen } = useRenameModal();
   // check if the user is an admin
   const { membership } = useOrganization();
@@ -51,6 +64,10 @@ const Actions = ({ children, side, sideOffset, id, title }: actionsProps) => {
     // @ts-ignore
     remove({ id })
       .then(() => {
+        if (pathname !== "/") {
+          broadcastEvent({ type: "redirect", to: "/" });
+          router.push("/");
+        }
         toast.success("Board deleted");
       })
       .catch(() => {
