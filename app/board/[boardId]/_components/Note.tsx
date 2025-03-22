@@ -4,6 +4,7 @@ import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import { NoteLayer } from "@/types/canvas";
 import { cn, colorToCss, getContrastingTextColor } from "@/lib/utils";
 import { useMutation } from "@liveblocks/react/suspense";
+import { useOrganization } from "@clerk/nextjs";
 
 const font = Kalam({
   subsets: ["latin"],
@@ -12,7 +13,7 @@ const font = Kalam({
 
 const calculateFontSize = (width: number, height: number) => {
   const maxFontSize = 96;
-  const scaleFactor = 0.17;
+  const scaleFactor = 0.2;
   const fontSizeBasedOnHeight = height * scaleFactor;
   const fontSizeBasedOnWidth = width * scaleFactor;
 
@@ -33,6 +34,9 @@ export const Note = ({
   selectionColor,
 }: NoteProps) => {
   const { x, y, width, height, fill, value } = layer;
+  // check if the user is an admin
+  const { membership } = useOrganization();
+  const isAdmin = membership && membership?.role === "org:admin";
 
   const updateValue = useMutation(({ storage }, newValue: string) => {
     const liveLayers = storage.get("layers");
@@ -41,6 +45,10 @@ export const Note = ({
   }, []);
 
   const handleContentChange = (e: ContentEditableEvent) => {
+    if (!isAdmin) {
+      e.target.value = value || "Text";
+      return;
+    }
     updateValue(e.target.value);
   };
 
@@ -68,6 +76,7 @@ export const Note = ({
           fontSize: calculateFontSize(width, height),
           color: fill ? getContrastingTextColor(fill) : "#000",
         }}
+        disabled={!isAdmin}
       />
     </foreignObject>
   );

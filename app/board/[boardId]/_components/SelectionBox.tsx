@@ -18,7 +18,7 @@ export const SelectionBox = memo(
     // check if the user is an admin
     const { membership } = useOrganization();
     const isAdmin = membership && membership?.role === "org:admin";
-    if (!isAdmin) return null;
+
     const soleLayerId = useSelf((me) =>
       me.presence.selection.length === 1 ? me.presence.selection[0] : null
     );
@@ -33,7 +33,7 @@ export const SelectionBox = memo(
     if (!bounds) {
       return null;
     }
-
+    if (!isAdmin) return null;
     return (
       <>
         <rect

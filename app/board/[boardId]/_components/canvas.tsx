@@ -152,6 +152,9 @@ const Canvas = ({ boardId }: CanvasProps) => {
       if (canvasState.mode !== CanvasMode.translating) {
         return;
       }
+      if (!isAdmin) {
+        return;
+      }
 
       const offset = {
         x: point.x - canvasState.current.x,
@@ -186,6 +189,7 @@ const Canvas = ({ boardId }: CanvasProps) => {
   //to move the cursor
   const onPointerMove = useMutation(
     ({ setMyPresence }, e: React.PointerEvent) => {
+      if (!isAdmin) return;
       e.preventDefault();
       //@ts-ignore
       const current = pointerEventToCanvasPoint(e, camera);
