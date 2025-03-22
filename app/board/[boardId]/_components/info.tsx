@@ -16,6 +16,7 @@ import { Menu } from "lucide-react";
 import { Irish_Grover, Inter } from "next/font/google";
 const irish_grover = Irish_Grover({ weight: "400", subsets: ["latin"] });
 import { useRouter } from "next/navigation";
+import { useOrganization } from "@clerk/nextjs";
 import { useEffect } from "react";
 import {
   useBroadcastEvent,
@@ -32,6 +33,10 @@ interface InfoProps {
 
 const font = Poppins({ subsets: ["latin"], weight: ["400"] });
 const Info = ({ boardId }: InfoProps) => {
+  // check if the user is an admin
+  const { membership } = useOrganization();
+  const isAdmin = membership && membership?.role === "org:admin";
+  //so the other users know that the board has been renamed
   const broadcastEvent = useBroadcastEvent();
   const router = useRouter();
   useEventListener(({ event }) => {
@@ -71,10 +76,15 @@ const Info = ({ boardId }: InfoProps) => {
       </Hint>
       {/* A seperator */}
       <div className="text-neutral-300 px-1.5">|</div>
-      <Hint label="Edit Title" side="bottom" sideOffset={10}>
+      <Hint
+        label={isAdmin ? "Edit Title" : "Board Title"}
+        side="bottom"
+        sideOffset={10}
+      >
         <div>
           <Button
             onClick={() => {
+              if (!isAdmin) return;
               onOpen(data._id, data.title);
             }}
             variant="board"
