@@ -20,7 +20,7 @@ export const RoomSideBar = () => {
   const searchParams = useSearchParams();
   const favorites = searchParams.get("favorites");
   return (
-    <div className="hidden lg:flex flex-col space-y-6 w-[206px] pl-5 pt-5">
+    <div className="hidden lg:flex flex-col space-y-6 w-[250px] pl-5 pt-5">
       <Link href="/">
         <div className="flex items-center gap-x-2">
           <Image src="/logo.svg" alt="logo" width={60} height={60} />

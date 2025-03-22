@@ -15,6 +15,7 @@ import { api } from "@/convex/_generated/api";
 import ConfirmModal from "./ConfirmModal";
 import { Button } from "../ui/Button";
 import { useRenameModal } from "@/store/use-rename";
+import { useOrganization } from "@clerk/nextjs";
 
 interface actionsProps {
   children: React.ReactNode;
@@ -26,6 +27,9 @@ interface actionsProps {
 
 const Actions = ({ children, side, sideOffset, id, title }: actionsProps) => {
   const { onOpen } = useRenameModal();
+  // check if the user is an admin
+  const { membership } = useOrganization();
+  const isAdmin = membership && membership?.role === "org:admin";
 
   // a function to copy the link
   const onCopyLink = () => {
@@ -69,13 +73,15 @@ const Actions = ({ children, side, sideOffset, id, title }: actionsProps) => {
           Copy board link
         </DropdownMenuItem>
         {/* show the rename modal */}
-        <DropdownMenuItem
-          onClick={() => onOpen(id, title)}
-          className="p-3 cursor-pointer"
-        >
-          <Pencil className="w-4 h-4 mr-2" />
-          Rename
-        </DropdownMenuItem>
+        {isAdmin && (
+          <DropdownMenuItem
+            onClick={() => onOpen(id, title)}
+            className="p-3 cursor-pointer"
+          >
+            <Pencil className="w-4 h-4 mr-2" />
+            Rename
+          </DropdownMenuItem>
+        )}
         {/* before deletion it must to show a confirm modal to confirm the deletion */}
         <ConfirmModal
           header="Delete Board ?"
@@ -84,13 +90,15 @@ const Actions = ({ children, side, sideOffset, id, title }: actionsProps) => {
         >
           {/* show the delete option */}
 
-          <Button
-            variant="ghost"
-            className="p-3 flex w-full !justify-start !items-center"
-          >
-            <Trash2 className="w-4 h-4 mr-2" />
-            Delete
-          </Button>
+          {isAdmin && (
+            <Button
+              variant="ghost"
+              className="p-3 flex w-full !justify-start !items-center"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
+            </Button>
+          )}
         </ConfirmModal>
       </DropdownMenuContent>
     </DropdownMenu>

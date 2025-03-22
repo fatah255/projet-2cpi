@@ -10,6 +10,9 @@ import { useRouter } from "next/navigation";
 
 //a component that renders in the case of empty boards
 const EmptyBoards = () => {
+  // check if the user is an admin
+  const { membership } = useOrganization();
+  const isAdmin = membership && membership?.role === "org:admin";
   const router = useRouter();
   //getting the create mutation that we define in the api endpoint
   //this mutation is used to create a new board
@@ -34,16 +37,30 @@ const EmptyBoards = () => {
   return (
     <div className="h-full flex flex-col items-center justify-center">
       <Image src="/note.svg" width={140} height={140} alt="empty" />
-      <h2 className="text-2xl font-semibold mt-6 text-blue-800">
-        Create Your First Board
-      </h2>
-      <p className="text-muted-foreground text-sm mt-2">
-        Start by creating a board for your organization
-      </p>
+      {isAdmin ? (
+        <h2 className="text-2xl font-semibold mt-6 text-blue-800">
+          Create Your First Board
+        </h2>
+      ) : (
+        <h2 className="text-2xl font-semibold mt-6 text-blue-800">
+          This Organization is Empty
+        </h2>
+      )}
+      {isAdmin ? (
+        <p className="text-muted-foreground text-sm mt-2">
+          Start by creating a board for your organization
+        </p>
+      ) : (
+        <p className="text-muted-foreground text-sm mt-2">
+          Wait until the admin creates a board
+        </p>
+      )}
       <div className="mt-6">
-        <Button size="lg" onClick={onClick}>
-          Create Board
-        </Button>
+        {isAdmin && (
+          <Button size="lg" onClick={onClick}>
+            Create Board
+          </Button>
+        )}
       </div>
     </div>
   );
