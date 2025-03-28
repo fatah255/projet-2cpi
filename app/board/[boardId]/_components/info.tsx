@@ -68,7 +68,7 @@ const Info = ({ boardId }: InfoProps) => {
                   irish_grover.className
                 )}
               >
-                WHITEBOARD
+                Whiteboard
               </span>
             </Link>
           </Button>

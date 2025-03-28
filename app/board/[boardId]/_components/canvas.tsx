@@ -443,11 +443,13 @@ const Canvas = ({ boardId }: CanvasProps) => {
         case "Z":
         case "z": {
           if (e.ctrlKey || e.metaKey) {
-            e.preventDefault();
-            if (e.shiftKey) {
-              history.redo();
-            } else {
-              history.undo();
+            if (isAdmin) {
+              e.preventDefault();
+              if (e.shiftKey) {
+                history.redo();
+              } else {
+                history.undo();
+              }
             }
             break;
           }
@@ -460,11 +462,12 @@ const Canvas = ({ boardId }: CanvasProps) => {
     return () => {
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [history]);
+  }, [history, isAdmin]);
 
   return (
     <main className="w-full h-full relative bg-neutral-100 touch-none">
       <Info boardId={boardId} />
+
       <Participants />
       {isAdmin && (
         <>

@@ -7,7 +7,7 @@ const InviteButton = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>
+        <Button size="sm">
           <Settings2 />
           Manage Organization
         </Button>

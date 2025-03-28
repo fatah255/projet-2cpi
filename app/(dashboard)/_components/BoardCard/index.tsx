@@ -33,6 +33,7 @@ const BoardCard = ({
   isFavorite,
 }: BoardCardProps) => {
   const { userId } = useAuth();
+
   //to check the owner of the board
   const authorLabel = userId === authorId ? "You" : authorName;
   const timeAgo = formatDistanceToNow(createdAt, { addSuffix: true });
@@ -45,7 +46,7 @@ const BoardCard = ({
       onUnfavorite({ id }).catch(() => toast.error("Failed to unfavorite"));
     } else {
       //@ts-ignore
-      onFavorite({ id, orgId }).catch(() => toast.error("Failed to favorite"));                   
+      onFavorite({ id, orgId }).catch(() => toast.error("Failed to favorite"));
     }
   };
 

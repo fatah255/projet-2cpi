@@ -74,8 +74,8 @@ const MergedHeroNavbar = () => {
                 <Image
                   src="/blob.svg"
                   alt="whiteboard"
-                  width={1500}
-                  height={1500}
+                  width={900}
+                  height={900}
                   className={styles.blobImage}
                 />
                 <div className={styles.textBlock}>

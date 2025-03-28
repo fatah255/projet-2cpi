@@ -13,7 +13,10 @@ const liveblocks = new Liveblocks({
 
 export const POST = async (request: Request) => {
   const authorization = await auth();
+
   const user = await currentUser();
+
+  console.log(request.headers.get("Authorization"));
 
   //if we receive an external request we refuse it
   if (!authorization || !user) {
