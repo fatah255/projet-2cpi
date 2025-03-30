@@ -1,11 +1,10 @@
 import { OrganizationSwitcher, UserButton } from "@clerk/nextjs";
 import SearchInput from "./SearchInput";
 import InviteButton from "./inviteButton";
-import { useOrganization } from "@clerk/nextjs";
+
 
 export const Navbar = () => {
-  //@ts-ignore
-  const { organization } = useOrganization;
+  
   return (
     <div className="flex items-center gap-x-4 p-5">
       <div className="hidden lg:flex lg:flex-1">
@@ -36,7 +35,7 @@ export const Navbar = () => {
           }}
         />
       </div>
-      {organization && <InviteButton />}
+      <InviteButton />
       <UserButton />
     </div>
   );
