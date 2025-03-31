@@ -42,7 +42,7 @@ import { Path } from "./Path";
 import { useDisableScroll } from "@/hooks/useDesableScroll";
 import { useEffect } from "react";
 import { useDeleteLayers } from "@/hooks/useDeleteLayers";
-import { useOrganization } from "@clerk/nextjs";
+import { useOrganization, useAuth } from "@clerk/nextjs";
 
 const MAX_LAYERS = 100;
 
@@ -556,6 +556,7 @@ const Canvas = ({ boardId }: CanvasProps) => {
           <SelectionTools camera={camera} setLastUsedColor={setLastUsedColor} />
         </>
       )}
+
       <svg
         onWheel={onWheel}
         onPointerMove={onPointerMove}

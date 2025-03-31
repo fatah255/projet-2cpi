@@ -26,7 +26,7 @@ export const LayerPreview = memo(
     const layer = useStorage((root) => root.layers.get(layerId));
     if (!layer) return null;
     //if the user who selected the layer is not admin we don't want to know
-    selectionColor = !isAdmin ? selectionColor : "";
+    selectionColor = isAdmin ? selectionColor : "";
 
     switch (layer.type) {
       case LayerType.Image:
