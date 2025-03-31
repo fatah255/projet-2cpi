@@ -481,35 +481,7 @@ const Canvas = ({ boardId }: CanvasProps) => {
     },
     [history]
   );
-  // so we can undo using the shortcut ctrl + z and redo using ctrl + shift + z
-
-  // useEffect(() => {
-  //   function onKeyDown(e: KeyboardEvent) {
-  //     switch (e.key) {
-  //       case "Z":
-  //       case "z": {
-  //         if (e.ctrlKey || e.metaKey) {
-  //           if (isAdmin) {
-  //             e.preventDefault();
-  //             if (e.shiftKey) {
-  //               history.redo();
-  //             } else {
-  //               history.undo();
-  //             }
-  //           }
-  //           break;
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   document.addEventListener("keydown", onKeyDown);
-
-  //   return () => {
-  //     document.removeEventListener("keydown", onKeyDown);
-  //   };
-  // }, [history, isAdmin]);
-
+  // so we can undo using the shortcut ctrl + z and redo using ctrl + shift + z and paste copied image
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       // Undo/Redo
@@ -533,7 +505,7 @@ const Canvas = ({ boardId }: CanvasProps) => {
     function onPaste(e: ClipboardEvent) {
       const items = e.clipboardData?.items;
       if (!items) return;
-
+      //@ts-ignore
       for (const item of items) {
         if (item.type.startsWith("image/")) {
           const file = item.getAsFile();
@@ -543,11 +515,11 @@ const Canvas = ({ boardId }: CanvasProps) => {
           reader.onload = () => {
             const imageData = reader.result as string;
 
-            // 👇 Calculate center of viewport adjusted by camera
+            // Calculate center of viewport adjusted by camera
             const x = window.innerWidth / 2 - camera.x;
             const y = window.innerHeight / 2 - camera.y;
 
-            insertImage(imageData, { x, y }); // ✅ Pass position
+            insertImage(imageData, { x, y }); //Pass position
           };
           reader.readAsDataURL(file);
         }
@@ -555,11 +527,11 @@ const Canvas = ({ boardId }: CanvasProps) => {
     }
 
     document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("paste", onPaste); // 👈 ADD THIS
+    document.addEventListener("paste", onPaste);
 
     return () => {
       document.removeEventListener("keydown", onKeyDown);
-      document.removeEventListener("paste", onPaste); // 👈 CLEANUP
+      document.removeEventListener("paste", onPaste);
     };
   }, [history, isAdmin, insertImage, camera]);
 
