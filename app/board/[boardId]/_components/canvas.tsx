@@ -483,32 +483,85 @@ const Canvas = ({ boardId }: CanvasProps) => {
   );
   // so we can undo using the shortcut ctrl + z and redo using ctrl + shift + z
 
+  // useEffect(() => {
+  //   function onKeyDown(e: KeyboardEvent) {
+  //     switch (e.key) {
+  //       case "Z":
+  //       case "z": {
+  //         if (e.ctrlKey || e.metaKey) {
+  //           if (isAdmin) {
+  //             e.preventDefault();
+  //             if (e.shiftKey) {
+  //               history.redo();
+  //             } else {
+  //               history.undo();
+  //             }
+  //           }
+  //           break;
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   document.addEventListener("keydown", onKeyDown);
+
+  //   return () => {
+  //     document.removeEventListener("keydown", onKeyDown);
+  //   };
+  // }, [history, isAdmin]);
+
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
+      // Undo/Redo
       switch (e.key) {
         case "Z":
         case "z": {
-          if (e.ctrlKey || e.metaKey) {
-            if (isAdmin) {
-              e.preventDefault();
-              if (e.shiftKey) {
-                history.redo();
-              } else {
-                history.undo();
-              }
+          if ((e.ctrlKey || e.metaKey) && isAdmin) {
+            e.preventDefault();
+            if (e.shiftKey) {
+              history.redo();
+            } else {
+              history.undo();
             }
-            break;
           }
+          break;
+        }
+      }
+    }
+
+    // ✅ Handle paste image
+    function onPaste(e: ClipboardEvent) {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (const item of items) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = () => {
+            const imageData = reader.result as string;
+
+            // 👇 Calculate center of viewport adjusted by camera
+            const x = window.innerWidth / 2 - camera.x;
+            const y = window.innerHeight / 2 - camera.y;
+
+            insertImage(imageData, { x, y }); // ✅ Pass position
+          };
+          reader.readAsDataURL(file);
         }
       }
     }
 
     document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("paste", onPaste); // 👈 ADD THIS
 
     return () => {
       document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("paste", onPaste); // 👈 CLEANUP
     };
-  }, [history, isAdmin]);
+  }, [history, isAdmin, insertImage, camera]);
 
   return (
     <main className="w-full h-full relative bg-neutral-100 touch-none">
