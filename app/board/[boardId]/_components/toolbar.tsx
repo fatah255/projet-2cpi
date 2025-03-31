@@ -2,6 +2,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import ToolButton from "./ToolButton";
 import { Image as ImageIcon } from "lucide-react";
 import { useRef } from "react";
+import { Camera } from "@/types/canvas";
 
 import {
   Circle,
@@ -22,7 +23,8 @@ interface ToolbarProps {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  insertImage: (src: string) => void;
+  insertImage: (src: string, position: { x: number; y: number }) => void;
+  camera: Camera;
 }
 
 const Toolbar = ({
@@ -33,6 +35,7 @@ const Toolbar = ({
   canUndo,
   canRedo,
   insertImage,
+  camera,
 }: ToolbarProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -43,7 +46,12 @@ const Toolbar = ({
     const reader = new FileReader();
     reader.onload = () => {
       const imageData = reader.result as string;
-      insertImage(imageData);
+
+      // ✅ Center image in current viewport
+      const x = window.innerWidth / 2 - camera.x;
+      const y = window.innerHeight / 2 - camera.y;
+
+      insertImage(imageData, { x, y });
     };
     reader.readAsDataURL(file);
   };
@@ -131,20 +139,20 @@ const Toolbar = ({
             });
           }}
         />
+        {/* for the image */}
+        <ToolButton
+          label="Upload Image"
+          icon={ImageIcon}
+          onClick={() => fileInputRef.current?.click()}
+        />
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={handleImageUpload}
+        />
       </div>
-      {/* for the image */}
-      <ToolButton
-        label="Upload Image"
-        icon={ImageIcon}
-        onClick={() => fileInputRef.current?.click()}
-      />
-      <input
-        type="file"
-        accept="image/*"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        onChange={handleImageUpload}
-      />
 
       <div className="bg-white rounded-md p-1.5 flex flex-col items-center shadow-md">
         <ToolButton

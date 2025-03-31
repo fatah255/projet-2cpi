@@ -6,7 +6,7 @@ import { BringToFront, SendToBack, Trash2 } from "lucide-react";
 import { Hint } from "@/components/hint";
 import { Camera, Color, LayerType } from "@/types/canvas";
 import { Button } from "@/components/ui/Button";
-import { useMutation, useSelf } from "@liveblocks/react/suspense";
+import { useMutation, useSelf, useStorage } from "@liveblocks/react/suspense";
 import { useDeleteLayers } from "@/hooks/useDeleteLayers";
 import { useSelectionBounds } from "@/hooks/useSelectionBounds";
 
@@ -20,6 +20,13 @@ interface SelectionToolsProps {
 export const SelectionTools = memo(
   ({ camera, setLastUsedColor }: SelectionToolsProps) => {
     const selection = useSelf((me) => me.presence.selection);
+    const isImageOnly = useStorage((root) => {
+      const layers = root.layers;
+      return (
+        selection.length === 1 &&
+        layers.get(selection[0])?.type === LayerType.Image
+      );
+    });
 
     const moveToFront = useMutation(
       ({ storage }) => {
@@ -106,7 +113,7 @@ export const SelectionTools = memo(
         )`,
         }}
       >
-        <ColorPicker onChange={setFill} />
+        {!isImageOnly && <ColorPicker onChange={setFill} />}
         <div className="flex flex-col gap-y-0.5">
           <Hint label="Bring to front">
             <Button onClick={moveToFront} variant="board" size="icon">
