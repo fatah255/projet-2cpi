@@ -4,7 +4,7 @@ import { memo } from "react";
 import { BringToFront, SendToBack, Trash2 } from "lucide-react";
 
 import { Hint } from "@/components/hint";
-import { Camera, Color } from "@/types/canvas";
+import { Camera, Color, LayerType } from "@/types/canvas";
 import { Button } from "@/components/ui/Button";
 import { useMutation, useSelf } from "@liveblocks/react/suspense";
 import { useDeleteLayers } from "@/hooks/useDeleteLayers";
@@ -69,8 +69,17 @@ export const SelectionTools = memo(
         const liveLayers = storage.get("layers");
         setLastUsedColor(fill);
 
+        // selection.forEach((id) => {
+        //   liveLayers.get(id)?.set("fill", fill);
+        // });
         selection.forEach((id) => {
-          liveLayers.get(id)?.set("fill", fill);
+          const layer = liveLayers.get(id);
+          if (!layer) return;
+
+          if (layer.get("type") !== LayerType.Image) {
+            //@ts-ignore
+            layer.set("fill", fill);
+          }
         });
       },
       [selection, setLastUsedColor]

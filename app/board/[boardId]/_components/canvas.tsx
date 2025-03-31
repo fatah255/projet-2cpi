@@ -350,6 +350,28 @@ const Canvas = ({ boardId }: CanvasProps) => {
     },
     [lastUsedColor]
   );
+  //mutation to add image
+  const insertImage = useMutation(({ storage, setMyPresence }, src: string) => {
+    const layers = storage.get("layers");
+    const layerIds = storage.get("layerIds");
+
+    if (layers.size >= MAX_LAYERS) return;
+
+    const id = nanoid();
+    layers.set(
+      id,
+      new LiveObject({
+        type: LayerType.Image,
+        x: 150,
+        y: 150,
+        width: 200,
+        height: 200,
+        src,
+      })
+    );
+    layerIds.push(id);
+    setMyPresence({ selection: [id] }, { addToHistory: true });
+  }, []);
 
   const onPointerUp = useMutation(
     ({}, e) => {
@@ -473,6 +495,7 @@ const Canvas = ({ boardId }: CanvasProps) => {
         <>
           {" "}
           <Toolbar
+            insertImage={insertImage}
             canvasState={canvasState}
             setCanvasState={setCanvasState}
             undo={history.undo}

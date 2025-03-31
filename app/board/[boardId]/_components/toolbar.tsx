@@ -1,5 +1,8 @@
 import { Skeleton } from "@/components/ui/Skeleton";
 import ToolButton from "./ToolButton";
+import { Image as ImageIcon } from "lucide-react";
+import { useRef } from "react";
+
 import {
   Circle,
   MousePointer2,
@@ -19,6 +22,7 @@ interface ToolbarProps {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  insertImage: (src: string) => void;
 }
 
 const Toolbar = ({
@@ -28,7 +32,22 @@ const Toolbar = ({
   redo,
   canUndo,
   canRedo,
+  insertImage,
 }: ToolbarProps) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const imageData = reader.result as string;
+      insertImage(imageData);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="absolute top-[50%] -translate-y-[50%] left flex flex-col gap-y-4">
       <div className="bg-white rounded-md p-1.5 flex gap-y-1 flex-col items-center shadow-md">
@@ -113,6 +132,20 @@ const Toolbar = ({
           }}
         />
       </div>
+      {/* for the image */}
+      <ToolButton
+        label="Upload Image"
+        icon={ImageIcon}
+        onClick={() => fileInputRef.current?.click()}
+      />
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={handleImageUpload}
+      />
+
       <div className="bg-white rounded-md p-1.5 flex flex-col items-center shadow-md">
         <ToolButton
           label="Undo"

@@ -29,6 +29,21 @@ export const LayerPreview = memo(
     selectionColor = !isAdmin ? selectionColor : "";
 
     switch (layer.type) {
+      case LayerType.Image:
+        return (
+          <image
+            key={layerId}
+            href={layer.src}
+            x={layer.x}
+            y={layer.y}
+            width={layer.width}
+            height={layer.height}
+            onPointerDown={(e) => onLayerPointerDown(e, layerId)}
+            style={{
+              pointerEvents: isAdmin ? "auto" : "none",
+            }}
+          />
+        );
       case LayerType.Path:
         return (
           <Path
