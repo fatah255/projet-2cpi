@@ -6,7 +6,12 @@ import {
   useParticipants,
 } from "@livekit/components-react";
 import { useEffect } from "react";
-import { useSelf, useOthers, useMutation } from "@liveblocks/react/suspense";
+import {
+  useSelf,
+  useOthers,
+  useMutation,
+  useStorage,
+} from "@liveblocks/react/suspense";
 import { TrackLoop, AudioTrack, useTracks } from "@livekit/components-react";
 import { Track } from "livekit-client";
 
@@ -73,12 +78,24 @@ function AudioControls({ isAdmin }: { isAdmin: boolean }) {
     };
   }, []);
 
-  const unmuteUser = useMutation(({ setMyPresence }, id: string) => {
-    setMyPresence(id, { mutedByAdmin: false });
+  const isGloballyMuted = useStorage(
+    (root) => root.mutedUsers?.get(String(me?.id) ?? "") ?? false
+  );
+
+  useEffect(() => {
+    if (isGloballyMuted) {
+      localParticipant.setMicrophoneEnabled(false);
+    }
+  }, [isGloballyMuted, localParticipant]);
+
+  const muteUser = useMutation(({ storage }, id: string) => {
+    const mutedUsers = storage.get("mutedUsers");
+    mutedUsers.set(String(id), true);
   }, []);
 
-  const muteUser = useMutation(({ setMyPresence }, id: string) => {
-    setMyPresence(id, { mutedByAdmin: true });
+  const unmuteUser = useMutation(({ storage }, id: string) => {
+    const mutedUsers = storage.get("mutedUsers");
+    mutedUsers.set(String(id), false);
   }, []);
 
   const setMuted = useMutation(({ setMyPresence }, value: boolean) => {
@@ -108,8 +125,6 @@ function AudioControls({ isAdmin }: { isAdmin: boolean }) {
       !localParticipant.isMicrophoneEnabled
     );
   };
-  const tracks = localParticipant.trackPublications;
-  console.log("Published audio tracks:", tracks);
 
   return (
     <div className="bg-white p-4 rounded shadow-md w-full max-w-md absolute !top-1 !right-1/2 z-50 ">

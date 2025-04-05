@@ -20,6 +20,7 @@ export function Room({ children, roomId, fallback }: RoomProps) {
         initialStorage={{
           layers: new LiveMap<string, LiveObject<Layer>>(),
           layerIds: new LiveList<string>([]),
+          mutedUsers: new LiveMap<string, boolean>(),
         }}
         initialPresence={{
           cursor: null,
