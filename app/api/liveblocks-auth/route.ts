@@ -16,8 +16,6 @@ export const POST = async (request: Request) => {
 
   const user = await currentUser();
 
-  console.log(request.headers.get("Authorization"));
-
   //if we receive an external request we refuse it
   if (!authorization || !user) {
     return new Response("Unauthorized", { status: 403 });

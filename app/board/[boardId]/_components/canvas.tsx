@@ -43,6 +43,9 @@ import { useDisableScroll } from "@/hooks/useDesableScroll";
 import { useEffect } from "react";
 import { useDeleteLayers } from "@/hooks/useDeleteLayers";
 import { useOrganization, useAuth } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
+
+import { VoiceRoom } from "./VoiceRoom";
 
 const MAX_LAYERS = 100;
 
@@ -51,6 +54,7 @@ interface CanvasProps {
 }
 
 const Canvas = ({ boardId }: CanvasProps) => {
+  const [token, setToken] = useState<string | null>(null);
   // check if the user is an admin
   const { membership } = useOrganization();
   const isAdmin = membership && membership?.role === "org:admin";
@@ -58,6 +62,21 @@ const Canvas = ({ boardId }: CanvasProps) => {
   const [canvasState, setCanvasState] = useState<CanvasState>({
     mode: CanvasMode.None,
   });
+
+  const { user } = useUser();
+
+  //livekit
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const res = await fetch(
+        `/api/livekit-token?userId=${user?.id}&userName=${user?.fullName}&roomName=${boardId}`
+      );
+      const data = await res.json();
+      setToken(data.token);
+    };
+    fetchToken();
+  }, [boardId]);
 
   //to know where we are on the canvas (user view)
   const [camera, setCamera] = useState<Camera>({ x: 0, y: 0 });
@@ -538,6 +557,13 @@ const Canvas = ({ boardId }: CanvasProps) => {
   return (
     <main className="w-full h-full relative bg-neutral-100 touch-none">
       <Info boardId={boardId} />
+      {token && (
+        <VoiceRoom
+          token={token}
+          url={process.env.NEXT_PUBLIC_LIVEKIT_URL!}
+          isAdmin={isAdmin ? true : false}
+        />
+      )}
 
       <Participants />
       {isAdmin && (
