@@ -54,6 +54,8 @@ interface CanvasProps {
 }
 
 const Canvas = ({ boardId }: CanvasProps) => {
+  const x = useSelf((me) => me.info?.id);
+  console.log("connectionId", x);
   const [token, setToken] = useState<string | null>(null);
   // check if the user is an admin
   const { membership } = useOrganization();
@@ -70,13 +72,13 @@ const Canvas = ({ boardId }: CanvasProps) => {
   useEffect(() => {
     const fetchToken = async () => {
       const res = await fetch(
-        `/api/livekit-token?userId=${user?.id}&userName=${user?.fullName}&roomName=${boardId}`
+        `/api/livekit-token?userId=${x}&userName=${user?.firstName}&roomName=${boardId}`
       );
       const data = await res.json();
       setToken(data.token);
     };
     fetchToken();
-  }, [boardId]);
+  }, [boardId, x, user?.firstName]);
 
   //to know where we are on the canvas (user view)
   const [camera, setCamera] = useState<Camera>({ x: 0, y: 0 });
@@ -562,6 +564,7 @@ const Canvas = ({ boardId }: CanvasProps) => {
           token={token}
           url={process.env.NEXT_PUBLIC_LIVEKIT_URL!}
           isAdmin={isAdmin ? true : false}
+          roomId={boardId}
         />
       )}
 

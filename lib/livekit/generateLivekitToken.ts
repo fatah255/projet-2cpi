@@ -12,10 +12,14 @@ export async function generateLiveKitToken({
   const apiKey = process.env.LIVEKIT_API_KEY!;
   const apiSecret = process.env.LIVEKIT_API_SECRET!;
 
-  const token = new AccessToken(apiKey, apiSecret, {
-    identity: userId,
-    name: userName,
-  });
+  const token = new AccessToken(
+    process.env.LIVEKIT_API_KEY!,
+    process.env.LIVEKIT_API_SECRET!,
+    {
+      identity: userId,
+      name: userName,
+    }
+  );
 
   token.addGrant({
     room: roomName,

@@ -33,6 +33,7 @@ export const POST = async (request: Request) => {
   const userInfo = {
     name: user.firstName || "Anonymous",
     picture: user.imageUrl!,
+    id: user.id,
   };
 
   //create a new session for the user

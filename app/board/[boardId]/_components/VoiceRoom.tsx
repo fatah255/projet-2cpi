@@ -3,8 +3,12 @@
 import {
   LiveKitRoom,
   useRoomContext,
-  useParticipants,
+  useTracks,
+  AudioTrack,
+  TrackLoop,
+  RoomAudioRenderer,
 } from "@livekit/components-react";
+import { Track } from "livekit-client";
 import { useEffect } from "react";
 import {
   useSelf,
@@ -12,12 +16,9 @@ import {
   useMutation,
   useStorage,
 } from "@liveblocks/react/suspense";
-import { TrackLoop, AudioTrack, useTracks } from "@livekit/components-react";
-import { Track } from "livekit-client";
 
 function RemoteAudio() {
   const tracks = useTracks([Track.Source.Microphone]);
-
   return (
     <TrackLoop tracks={tracks}>
       <AudioTrack />
@@ -29,10 +30,12 @@ export function VoiceRoom({
   token,
   url,
   isAdmin,
+  roomId,
 }: {
   token: string;
   url: string;
   isAdmin: boolean;
+  roomId: string;
 }) {
   return (
     <LiveKitRoom
@@ -43,13 +46,20 @@ export function VoiceRoom({
       video={false}
       data-lk-theme="default"
     >
-      <AudioControls isAdmin={isAdmin} />
+      <AudioControls isAdmin={isAdmin} roomId={roomId} />
       <RemoteAudio />
+      <RoomAudioRenderer />
     </LiveKitRoom>
   );
 }
 
-function AudioControls({ isAdmin }: { isAdmin: boolean }) {
+function AudioControls({
+  isAdmin,
+  roomId,
+}: {
+  isAdmin: boolean;
+  roomId: string;
+}) {
   const { localParticipant } = useRoomContext();
   const others = useOthers();
   const me = useSelf((me) => ({
@@ -57,25 +67,18 @@ function AudioControls({ isAdmin }: { isAdmin: boolean }) {
     mutedByAdmin: me.presence.mutedByAdmin,
     raiseHand: me.presence.raiseHand,
   }));
+
   useEffect(() => {
     const resumeAudio = async () => {
       try {
         const context = new AudioContext();
-        if (context.state === "suspended") {
-          await context.resume();
-          console.log("🔊 AudioContext resumed");
-        }
+        if (context.state === "suspended") await context.resume();
       } catch (e) {
-        console.warn("❌ Failed to resume audio:", e);
+        console.warn("Audio resume failed", e);
       }
     };
-
-    // Only resume after click (required by browser policy)
     window.addEventListener("click", resumeAudio, { once: true });
-
-    return () => {
-      window.removeEventListener("click", resumeAudio);
-    };
+    return () => window.removeEventListener("click", resumeAudio);
   }, []);
 
   const isGloballyMuted = useStorage(
@@ -88,21 +91,9 @@ function AudioControls({ isAdmin }: { isAdmin: boolean }) {
     }
   }, [isGloballyMuted, localParticipant]);
 
-  const muteUser = useMutation(({ storage }, id: string) => {
-    const mutedUsers = storage.get("mutedUsers");
-    mutedUsers.set(String(id), true);
-  }, []);
-
-  const unmuteUser = useMutation(({ storage }, id: string) => {
-    const mutedUsers = storage.get("mutedUsers");
-    mutedUsers.set(String(id), false);
-  }, []);
-
   const setMuted = useMutation(({ setMyPresence }, value: boolean) => {
     setMyPresence({ mutedByAdmin: value });
-    if (value) {
-      localParticipant.setMicrophoneEnabled(false);
-    }
+    if (value) localParticipant.setMicrophoneEnabled(false);
   }, []);
 
   const raiseHand = useMutation(({ setMyPresence }) => {
@@ -112,22 +103,43 @@ function AudioControls({ isAdmin }: { isAdmin: boolean }) {
     setMyPresence({ raiseHand: false });
   }, []);
 
-  // Auto mute if admin muted you
   useEffect(() => {
-    if (me?.mutedByAdmin) {
-      localParticipant.setMicrophoneEnabled(false);
-    }
+    if (me?.mutedByAdmin) localParticipant.setMicrophoneEnabled(false);
   }, [me?.mutedByAdmin, localParticipant]);
 
   const toggleMic = () => {
-    if (me?.mutedByAdmin) return; // ❌ can't unmute if admin muted you
+    if (me?.mutedByAdmin) return;
     localParticipant.setMicrophoneEnabled(
       !localParticipant.isMicrophoneEnabled
     );
   };
 
+  const muteUser = async (identity: string) => {
+    await fetch("/api/update-participant", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        roomId,
+        identity,
+        canPublish: false,
+      }),
+    });
+  };
+
+  const unmuteUser = async (identity: string) => {
+    await fetch("/api/update-participant", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        roomId,
+        identity,
+        canPublish: true,
+      }),
+    });
+  };
+
   return (
-    <div className="bg-white p-4 rounded shadow-md w-full max-w-md absolute !top-1 !right-1/2 z-50 ">
+    <div className="bg-white p-4 rounded shadow-md w-full max-w-md absolute !top-1 !right-1/2 z-50">
       <div className="flex justify-between items-center mb-2">
         <span className="font-semibold">Mic</span>
         <button
@@ -160,24 +172,30 @@ function AudioControls({ isAdmin }: { isAdmin: boolean }) {
         <div className="mt-4">
           <h4 className="font-semibold text-sm">Participants</h4>
           <ul className="space-y-1 mt-2">
-            {others.map(({ connectionId, presence, info }) => (
+            {others.map(({ info, presence }) => (
               <li
-                key={connectionId}
+                key={info?.id || info?.name}
                 className="flex items-center justify-between border-b pb-1"
               >
                 <span>
-                  {info?.name || connectionId}
+                  {info?.name || info?.id}
                   {presence?.raiseHand && " ✋"}
                 </span>
                 <div className="space-x-2 text-xs">
                   <button
-                    onClick={() => unmuteUser(connectionId)}
+                    onClick={() => {
+                      unmuteUser(String(info?.id)!);
+                      console.log("Unmuted", info?.id);
+                    }}
                     className="text-green-600"
                   >
                     Unmute
                   </button>
                   <button
-                    onClick={() => muteUser(connectionId)}
+                    onClick={() => {
+                      muteUser(String(info?.id)!);
+                      console.log("Muted", info?.id);
+                    }}
                     className="text-red-600"
                   >
                     Mute

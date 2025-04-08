@@ -39,6 +39,7 @@ declare global {
       info?: {
         name?: string;
         picture?: string;
+        id?: string;
       };
     };
 
