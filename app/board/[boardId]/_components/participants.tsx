@@ -18,6 +18,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useBroadcastEvent } from "@liveblocks/react";
 import { Button } from "@/components/ui/Button";
 import {
   AudioTrack,
@@ -52,6 +53,7 @@ const Participants = ({
   isAdmin: boolean;
   roomId: string;
 }) => {
+  const broadcast = useBroadcastEvent();
   const { localParticipant } = useRoomContext();
   const [soundEnabled, setSoundEnabled] = useState(true);
   const roomContext = useRoomContext();
@@ -81,8 +83,13 @@ const Participants = ({
     }
   }, [isGloballyMuted, self?.mutedByAdmin, localParticipant]);
 
+  // const raiseHand = useMutation(({ setMyPresence }) => {
+  //   setMyPresence({ raiseHand: true });
+
+  // }, []);
   const raiseHand = useMutation(({ setMyPresence }) => {
     setMyPresence({ raiseHand: true });
+    broadcast({ type: "RAISE_HAND", name: self?.name });
   }, []);
 
   const lowerHand = useMutation(({ setMyPresence }) => {

@@ -11,6 +11,7 @@ import {
   useMutation,
   useStorage,
   useOthersMapped,
+  useEventListener,
 } from "@liveblocks/react/suspense";
 import React, { useCallback, useMemo, useState } from "react";
 import {
@@ -44,6 +45,7 @@ import { useDeleteLayers } from "@/hooks/useDeleteLayers";
 import { useOrganization, useAuth } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
 import { LiveKitRoom } from "@livekit/components-react";
+import { toast } from "sonner";
 
 const MAX_LAYERS = 100;
 
@@ -63,6 +65,19 @@ const Canvas = ({ boardId }: CanvasProps) => {
   //to know what we are doing on the canvas
   const [canvasState, setCanvasState] = useState<CanvasState>({
     mode: CanvasMode.None,
+  });
+
+  useEventListener(({ event }) => {
+    //@ts-ignore
+    if (event.type === "RAISE_HAND") {
+      const audio = new Audio("/sounds/raiseHand.mp3");
+      audio.volume = 1;
+      audio.play().catch((err) => {
+        console.warn("Autoplay blocked or audio error:", err);
+      });
+      //@ts-ignore
+      toast.message(`${event.name} raised hand`);
+    }
   });
 
   const { user } = useUser();
@@ -393,28 +408,7 @@ const Canvas = ({ boardId }: CanvasProps) => {
     },
     [lastUsedColor]
   );
-  //mutation to add image
-  // const insertImage = useMutation(({ storage, setMyPresence }, src: string) => {
-  //   const layers = storage.get("layers");
-  //   const layerIds = storage.get("layerIds");
 
-  //   if (layers.size >= MAX_LAYERS) return;
-
-  //   const id = nanoid();
-  //   layers.set(
-  //     id,
-  //     new LiveObject({
-  //       type: LayerType.Image,
-  //       x: 150,
-  //       y: 150,
-  //       width: 200,
-  //       height: 200,
-  //       src,
-  //     })
-  //   );
-  //   layerIds.push(id);
-  //   setMyPresence({ selection: [id] }, { addToHistory: true });
-  // }, []);
   const insertImage = useMutation(
     ({ storage, setMyPresence }, src: string, position: Point) => {
       const layers = storage.get("layers");
