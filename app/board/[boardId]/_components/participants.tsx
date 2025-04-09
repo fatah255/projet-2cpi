@@ -34,6 +34,10 @@ import { Mic, MicOff } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import RiseHand from "@/components/global/RiseHand";
 import LowerHand from "@/components/global/LowerHand";
+import { AnimatedSpeaker } from "@/components/global/AnimatedSpeaker";
+import SoundOn from "@/components/global/SoundOn";
+import SoundOff from "@/components/global/SoundOff";
+import RaisedHand from "@/components/global/RaisedHand";
 
 const MAX_SHOWN_USERS = 2;
 
@@ -53,6 +57,11 @@ const Participants = ({
   isAdmin: boolean;
   roomId: string;
 }) => {
+  const speakingTracks = useTracks([Track.Source.Microphone]).filter(
+    (track) => track.participant.isSpeaking
+  );
+  const speakingIds = speakingTracks.map((t) => t.participant.identity);
+
   const broadcast = useBroadcastEvent();
   const { localParticipant } = useRoomContext();
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -182,8 +191,8 @@ const Participants = ({
           <Button onClick={toggleMic} disabled={!!self?.mutedByAdmin}>
             {micEnabled ? <Mic /> : <MicOff />}
           </Button>
-          <Button onClick={() => setSoundEnabled((s) => !s)}>
-            toggle sound
+          <Button variant="outline" onClick={() => setSoundEnabled((s) => !s)}>
+            {soundEnabled ? <SoundOn /> : <SoundOff />}
           </Button>
 
           {!isAdmin && (
@@ -200,40 +209,52 @@ const Participants = ({
 
         {/* --- Participant List --- */}
         <div className="mt-6 space-y-3">
-          {others.map(({ id, info, presence }) => (
-            <div
-              key={id}
-              className="flex justify-between items-center border-b pb-2"
-            >
-              <div className="flex items-center gap-2">
-                <UserAvatar
-                  src={info?.picture}
-                  name={info?.name}
-                  fallback={info?.name?.[0] || "A"}
-                />
-                <span>{info?.name}</span>
-                {presence?.raiseHand && <span className="ml-1">✋</span>}
-              </div>
-              {isAdmin && (
-                <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    className="text-green-600 text-xs"
-                    onClick={() => unmuteUser(String(id))}
-                  >
-                    Unmute
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="text-red-600 text-xs"
-                    onClick={() => muteUser(String(id))}
-                  >
-                    Mute
-                  </Button>
+          {others.map(({ id, info, presence }) => {
+            const isSpeaking = speakingIds.includes(id);
+            return (
+              <div
+                key={id}
+                className="flex justify-between items-center border-b pb-2"
+              >
+                <div className="flex items-center gap-2">
+                  <UserAvatar
+                    src={info?.picture}
+                    name={info?.name}
+                    fallback={info?.name?.[0] || "A"}
+                  />
+                  <span>{info?.name}</span>
+                  {presence?.raiseHand && (
+                    <span className="ml-1">
+                      <RaisedHand />
+                    </span>
+                  )}
+                  {isSpeaking && (
+                    <span className="ml-1">
+                      <AnimatedSpeaker isSpeaking={isSpeaking} />
+                    </span>
+                  )}
                 </div>
-              )}
-            </div>
-          ))}
+                {isAdmin && (
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      className="text-green-600 text-xs"
+                      onClick={() => unmuteUser(String(id))}
+                    >
+                      Unmute
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      className="text-red-600 text-xs"
+                      onClick={() => muteUser(String(id))}
+                    >
+                      Mute
+                    </Button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </SheetContent>
     </Sheet>
