@@ -53,31 +53,41 @@ interface CanvasProps {
 
 const Canvas = ({ boardId }: CanvasProps) => {
   const x = useSelf((me) => me.info?.id);
+
   console.log("connectionId", x);
   const [token, setToken] = useState<string | null>(null);
   // check if the user is an admin
   const { membership } = useOrganization();
   const isAdmin = membership && membership?.role === "org:admin";
-  if (isAdmin) {
-    const unmuteAdmin = async () => {
-      await fetch("/api/update-participant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          boardId,
-          x,
-          canPublish: true,
-        }),
-      });
-    };
-    unmuteAdmin();
-  }
+
   //to know what we are doing on the canvas
   const [canvasState, setCanvasState] = useState<CanvasState>({
     mode: CanvasMode.None,
   });
 
   const { user } = useUser();
+
+  useEffect(() => {
+    if (isAdmin) {
+      const unmuteAdmin = async () => {
+        try {
+          await fetch("/api/update-participant", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              boardId,
+              identity: user?.id,
+              canPublish: true,
+            }),
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      unmuteAdmin();
+    }
+  }, [isAdmin, boardId, user?.id]);
 
   //livekit
 

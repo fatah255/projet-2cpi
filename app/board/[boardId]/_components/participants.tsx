@@ -1,7 +1,7 @@
 "use client";
 
 import { Skeleton } from "@/components/ui/Skeleton";
-import { useEffect } from "react";
+import { use, useEffect, useState } from "react";
 import {
   useSelf,
   useOthers,
@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import {
   AudioTrack,
+  ParticipantTile,
   RoomAudioRenderer,
   TrackLoop,
   useRoomContext,
@@ -28,14 +29,16 @@ import {
 } from "@livekit/components-react";
 import { toast } from "sonner";
 import { Track } from "livekit-client";
+import { Mic, MicOff } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 
 const MAX_SHOWN_USERS = 2;
 
-function RemoteAudio() {
+function RemoteAudio({ soundEnabled }: { soundEnabled: boolean }) {
   const tracks = useTracks([Track.Source.Microphone]);
   return (
     <TrackLoop tracks={tracks}>
-      <AudioTrack />
+      <AudioTrack volume={soundEnabled ? 1 : 0} />
     </TrackLoop>
   );
 }
@@ -48,6 +51,11 @@ const Participants = ({
   roomId: string;
 }) => {
   const { localParticipant } = useRoomContext();
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const roomContext = useRoomContext();
+  const [micEnabled, setMicEnabled] = useState(
+    localParticipant.isMicrophoneEnabled
+  );
   const self = useSelf((me) => ({
     id: me.id,
     connectionId: me.connectionId,
@@ -64,7 +72,7 @@ const Participants = ({
   const isGloballyMuted = useStorage(
     (root) => root.mutedUsers?.get(String(self?.id) ?? "") ?? false
   );
-
+  const { user } = useUser();
   useEffect(() => {
     if (isGloballyMuted || self?.mutedByAdmin) {
       localParticipant.setMicrophoneEnabled(false);
@@ -78,16 +86,102 @@ const Participants = ({
   const lowerHand = useMutation(({ setMyPresence }) => {
     setMyPresence({ raiseHand: false });
   }, []);
+  // const toggleMic = async () => {
+  //   if (self?.mutedByAdmin) return;
+
+  //   try {
+  //     const newState = !localParticipant.isMicrophoneEnabled;
+
+  //     await fetch("/api/update-participant", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         roomId,
+  //         identity: user?.id,
+  //         canPublish: newState,
+  //       }),
+  //     });
+  //     const res = await fetch("/api/get-publish-status", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         roomId: roomId,
+  //         identity: user?.id,
+  //       }),
+  //     });
+  //     const data = await res.json();
+  //     setMicEnabled(data.canPublish);
+
+  //     await localParticipant.setMicrophoneEnabled(newState);
+  //   } catch (err) {
+  //     console.error("Mic toggle error:", err);
+  //     toast.error("Unable to toggle mic.");
+  //   }
+  // };
+
+  // const toggleMic = async () => {
+  //   try {
+  //     // Check LiveKit permission from server
+  //     const res = await fetch("/api/get-publish-status", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         roomId,
+  //         identity: user?.id,
+  //       }),
+  //     });
+
+  //     const data = await res.json();
+
+  //     if (!data.canPublish) {
+  //       toast.error("You are muted by the admin.");
+  //       return;
+  //     }
+
+  //     const newState = !localParticipant.isMicrophoneEnabled;
+
+  //     await localParticipant.setMicrophoneEnabled(newState);
+  //     setMicEnabled(newState);
+
+  //     // Optional: Update server so canPublish reflects the new state
+  //     await fetch("/api/update-participant", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         roomId,
+  //         identity: user?.id,
+  //         canPublish: newState,
+  //       }),
+  //     });
+  //   } catch (err) {
+  //     console.error("Mic toggle error:", err);
+  //     toast.error("Unable to toggle mic.");
+  //   }
+  // };
 
   const toggleMic = async () => {
-    if (self?.mutedByAdmin) return;
-    try {
-      await localParticipant.setMicrophoneEnabled(
-        !localParticipant.isMicrophoneEnabled
-      );
-    } catch (err) {
-      console.error("Mic error:", err);
+    const res = await fetch("/api/get-publish-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        roomId,
+        identity: user?.id,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!data.canPublish) {
       toast.error("You are muted by the admin.");
+      return;
+    }
+
+    try {
+      const newMicState = !localParticipant.isMicrophoneEnabled;
+      await localParticipant.setMicrophoneEnabled(newMicState);
+      setMicEnabled(newMicState);
+    } catch (err) {
+      console.error("Mic toggle error:", err);
     }
   };
 
@@ -136,7 +230,7 @@ const Participants = ({
               />
             )}
           </div>
-          <RemoteAudio />
+          <RemoteAudio soundEnabled={soundEnabled} />
           <RoomAudioRenderer />
         </div>
       </SheetTrigger>
@@ -149,9 +243,10 @@ const Participants = ({
         {/* --- Self Controls --- */}
         <div className="mt-4 flex gap-2 flex-wrap">
           <Button onClick={toggleMic} disabled={!!self?.mutedByAdmin}>
-            {localParticipant.isMicrophoneEnabled
-              ? "Mute Myself"
-              : "Unmute Myself"}
+            {micEnabled ? <Mic /> : <MicOff />}
+          </Button>
+          <Button onClick={() => setSoundEnabled((s) => !s)}>
+            toggle sound
           </Button>
 
           {!isAdmin && (

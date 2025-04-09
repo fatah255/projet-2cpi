@@ -12,9 +12,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const res = await service.getParticipant(roomId, identity);
-    const sid = res.tracks.find((track) => track.name === "audio")?.sid;
-    //@ts-ignore
-    // await service.mutePublishedTrack(roomId, identity, sid, true);
+
     await service.updateParticipant(roomId, identity, undefined, {
       canPublish,
       canSubscribe: true,
