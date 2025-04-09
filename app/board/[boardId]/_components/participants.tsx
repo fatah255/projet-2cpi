@@ -31,6 +31,8 @@ import { toast } from "sonner";
 import { Track } from "livekit-client";
 import { Mic, MicOff } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
+import RiseHand from "@/components/global/RiseHand";
+import LowerHand from "@/components/global/LowerHand";
 
 const MAX_SHOWN_USERS = 2;
 
@@ -86,78 +88,6 @@ const Participants = ({
   const lowerHand = useMutation(({ setMyPresence }) => {
     setMyPresence({ raiseHand: false });
   }, []);
-  // const toggleMic = async () => {
-  //   if (self?.mutedByAdmin) return;
-
-  //   try {
-  //     const newState = !localParticipant.isMicrophoneEnabled;
-
-  //     await fetch("/api/update-participant", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         roomId,
-  //         identity: user?.id,
-  //         canPublish: newState,
-  //       }),
-  //     });
-  //     const res = await fetch("/api/get-publish-status", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         roomId: roomId,
-  //         identity: user?.id,
-  //       }),
-  //     });
-  //     const data = await res.json();
-  //     setMicEnabled(data.canPublish);
-
-  //     await localParticipant.setMicrophoneEnabled(newState);
-  //   } catch (err) {
-  //     console.error("Mic toggle error:", err);
-  //     toast.error("Unable to toggle mic.");
-  //   }
-  // };
-
-  // const toggleMic = async () => {
-  //   try {
-  //     // Check LiveKit permission from server
-  //     const res = await fetch("/api/get-publish-status", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         roomId,
-  //         identity: user?.id,
-  //       }),
-  //     });
-
-  //     const data = await res.json();
-
-  //     if (!data.canPublish) {
-  //       toast.error("You are muted by the admin.");
-  //       return;
-  //     }
-
-  //     const newState = !localParticipant.isMicrophoneEnabled;
-
-  //     await localParticipant.setMicrophoneEnabled(newState);
-  //     setMicEnabled(newState);
-
-  //     // Optional: Update server so canPublish reflects the new state
-  //     await fetch("/api/update-participant", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         roomId,
-  //         identity: user?.id,
-  //         canPublish: newState,
-  //       }),
-  //     });
-  //   } catch (err) {
-  //     console.error("Mic toggle error:", err);
-  //     toast.error("Unable to toggle mic.");
-  //   }
-  // };
 
   const toggleMic = async () => {
     const res = await fetch("/api/get-publish-status", {
@@ -251,9 +181,11 @@ const Participants = ({
 
           {!isAdmin && (
             <>
-              <Button onClick={raiseHand}>✋ Raise Hand</Button>
+              <Button variant="secondary" onClick={raiseHand}>
+                <RiseHand />
+              </Button>
               <Button variant="secondary" onClick={lowerHand}>
-                Lower
+                <LowerHand />
               </Button>
             </>
           )}
