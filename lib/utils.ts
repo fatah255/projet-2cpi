@@ -165,3 +165,23 @@ export function getSvgPathFromStroke(stroke: number[][]) {
   d.push("Z");
   return d.join(" ");
 }
+
+export function formatDateSmart(date: Date): string {
+  const now = new Date();
+
+  const isSameDay =
+    date.getDate() === now.getDate() &&
+    date.getMonth() === now.getMonth() &&
+    date.getFullYear() === now.getFullYear();
+
+  if (isSameDay) {
+    // Return time as HH:mm (e.g., 14:30)
+    return date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  // Return date as DD/MM/YYYY (e.g., 10/04/2025)
+  return date.toLocaleDateString("en-GB"); // Adjust locale if needed
+}

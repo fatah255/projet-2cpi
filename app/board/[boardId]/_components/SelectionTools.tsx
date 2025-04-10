@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { useMutation, useSelf, useStorage } from "@liveblocks/react/suspense";
 import { useDeleteLayers } from "@/hooks/useDeleteLayers";
 import { useSelectionBounds } from "@/hooks/useSelectionBounds";
+import { Slider } from "@/components/ui/Slider";
 
 import { ColorPicker } from "./ColorPicker";
 

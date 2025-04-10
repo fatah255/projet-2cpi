@@ -46,6 +46,7 @@ import { useOrganization, useAuth } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
 import { LiveKitRoom } from "@livekit/components-react";
 import { toast } from "sonner";
+import Chat from "./Chat";
 
 const MAX_LAYERS = 100;
 
@@ -77,6 +78,7 @@ const Canvas = ({ boardId }: CanvasProps) => {
       });
       //@ts-ignore
       toast.message(`${event.name} raised hand`);
+      //@ts-ignore
     }
   });
 
@@ -585,7 +587,7 @@ const Canvas = ({ boardId }: CanvasProps) => {
       >
         <Participants isAdmin={isAdmin ? true : false} roomId={boardId} />
       </LiveKitRoom>
-
+      <Chat />
       {isAdmin && (
         <>
           {" "}
