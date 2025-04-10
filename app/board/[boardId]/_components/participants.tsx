@@ -38,6 +38,7 @@ import { AnimatedSpeaker } from "@/components/global/AnimatedSpeaker";
 import SoundOn from "@/components/global/SoundOn";
 import SoundOff from "@/components/global/SoundOff";
 import RaisedHand from "@/components/global/RaisedHand";
+import MuteAll from "@/components/global/MuteAll";
 
 const MAX_SHOWN_USERS = 2;
 
@@ -194,6 +195,21 @@ const Participants = ({
           <Button variant="outline" onClick={() => setSoundEnabled((s) => !s)}>
             {soundEnabled ? <SoundOn /> : <SoundOff />}
           </Button>
+
+          {isAdmin && (
+            <Button
+              variant="outline"
+              onClick={async () => {
+                for (const participant of others) {
+                  if (participant.id !== self?.id) {
+                    await muteUser(String(participant.id));
+                  }
+                }
+              }}
+            >
+              <MuteAll />
+            </Button>
+          )}
 
           {!isAdmin && (
             <>
