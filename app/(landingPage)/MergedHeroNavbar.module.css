@@ -163,7 +163,7 @@
   position: absolute;
   top: -24rem; /* -top-96 => 24rem */
   left: -24rem; /* -left-96 => 24rem */
-  width: 1500px;
+  width: 900px;
   z-index: 1;
   transform: rotate(-12deg);
   display: none;

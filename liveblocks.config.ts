@@ -22,12 +22,15 @@ declare global {
       selection: string[];
       pencilDraft: [x: number, y: number, pressure: number][] | null;
       penColor: Color | null;
+      mutedByAdmin?: boolean;
+      raiseHand?: boolean;
     };
 
     // The Storage tree for the room, for useMutation, useStorage, etc.
     Storage: {
       layers: LiveMap<string, LiveObject<Layer>>;
       layerIds: LiveList<string>;
+      mutedUsers: LiveMap<string, boolean>;
     };
 
     // Custom user info set when authenticating with a secret key
@@ -36,6 +39,7 @@ declare global {
       info?: {
         name?: string;
         picture?: string;
+        id?: string;
       };
     };
 

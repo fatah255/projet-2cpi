@@ -1,13 +1,16 @@
-import { Plus, Settings2 } from "lucide-react";
-import { OrganizationProfile } from "@clerk/nextjs";
+"use client";
+import { Settings2 } from "lucide-react";
+import { OrganizationProfile, useOrganization } from "@clerk/nextjs";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 
 const InviteButton = () => {
+  const { organization } = useOrganization();
+  if (!organization) return null;
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>
+        <Button size="sm">
           <Settings2 />
           Manage Organization
         </Button>

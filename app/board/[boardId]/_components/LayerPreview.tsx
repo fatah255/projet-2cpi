@@ -26,9 +26,24 @@ export const LayerPreview = memo(
     const layer = useStorage((root) => root.layers.get(layerId));
     if (!layer) return null;
     //if the user who selected the layer is not admin we don't want to know
-    selectionColor = !isAdmin ? selectionColor : "";
+    selectionColor = isAdmin ? selectionColor : "";
 
     switch (layer.type) {
+      case LayerType.Image:
+        return (
+          <image
+            key={layerId}
+            href={layer.src}
+            x={layer.x}
+            y={layer.y}
+            width={layer.width}
+            height={layer.height}
+            onPointerDown={(e) => onLayerPointerDown(e, layerId)}
+            style={{
+              pointerEvents: isAdmin ? "auto" : "none",
+            }}
+          />
+        );
       case LayerType.Path:
         return (
           <Path

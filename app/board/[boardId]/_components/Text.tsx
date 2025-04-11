@@ -4,6 +4,7 @@ import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import { TextLayer } from "@/types/canvas";
 import { cn, colorToCss } from "@/lib/utils";
 import { useMutation } from "@liveblocks/react/suspense";
+import { useOrganization } from "@clerk/nextjs";
 
 const font = Kalam({
   subsets: ["latin"],
@@ -32,6 +33,9 @@ export const Text = ({
   id,
   selectionColor,
 }: TextProps) => {
+  const { membership } = useOrganization();
+  const isAdmin = membership && membership?.role === "org:admin";
+
   const { x, y, width, height, fill, value } = layer;
 
   const updateValue = useMutation(({ storage }, newValue: string) => {
@@ -56,6 +60,7 @@ export const Text = ({
       }}
     >
       <ContentEditable
+        disabled={!isAdmin}
         html={value || "Text"}
         onChange={handleContentChange}
         className={cn(

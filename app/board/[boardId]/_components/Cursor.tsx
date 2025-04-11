@@ -19,7 +19,6 @@ export const Cursor = memo(({ connectionId }: CursorProps) => {
   const name = info?.name || "Anonymous";
 
   if (!cursor) return null;
-  if (isAdmin) return null;
 
   const { x, y } = cursor;
   return (

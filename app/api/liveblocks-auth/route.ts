@@ -7,12 +7,12 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 const liveblocks = new Liveblocks({
-  secret:
-    "sk_dev_zVFEN9e2NWRuAFr3ZgzE1QJWQPKB6hs61KHcgqgVKnI492pTg3aD9n2GtBxbalqE",
+  secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
 
 export const POST = async (request: Request) => {
   const authorization = await auth();
+
   const user = await currentUser();
 
   //if we receive an external request we refuse it
@@ -32,6 +32,7 @@ export const POST = async (request: Request) => {
   const userInfo = {
     name: user.firstName || "Anonymous",
     picture: user.imageUrl!,
+    id: user.id,
   };
 
   //create a new session for the user

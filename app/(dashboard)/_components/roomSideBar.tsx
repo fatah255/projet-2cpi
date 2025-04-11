@@ -20,14 +20,14 @@ export const RoomSideBar = () => {
   const searchParams = useSearchParams();
   const favorites = searchParams.get("favorites");
   return (
-    <div className="hidden lg:flex flex-col space-y-6 w-[250px] pl-5 pt-5">
+    <div className="hidden lg:flex flex-col space-y-6 w-[206px] pl-5 pt-5">
       <Link href="/">
         <div className="flex items-center gap-x-2">
           <Image src="/logo.svg" alt="logo" width={60} height={60} />
           <span
             className={cn("text-[#11009E] text-2xl", irish_grover.className)}
           >
-            WHITEBOARD
+            Whiteboard
           </span>
         </div>
       </Link>
@@ -60,7 +60,7 @@ export const RoomSideBar = () => {
           className="font-normal justify-start px-2 w-full"
         >
           <Link href="/">
-            <LayoutDashboard className="h-4 w-4 mr-2" />
+            <LayoutDashboard className="h-4 w-4 mr-2 text-[#11009E]" />
             Class Boards
           </Link>
         </Button>
@@ -76,7 +76,7 @@ export const RoomSideBar = () => {
               query: { favorites: true },
             }}
           >
-            <Star className="h-4 w-4 mr-2" />
+            <Star className="h-4 w-4 mr-2 text-[#11009E]" />
             Favorite Boards
           </Link>
         </Button>

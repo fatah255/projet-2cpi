@@ -1,6 +1,5 @@
 "use client";
 
-import Loading from "@/components/global/loading";
 import Info from "./info";
 import Participants from "./participants";
 import Toolbar from "./toolbar";
@@ -12,6 +11,7 @@ import {
   useMutation,
   useStorage,
   useOthersMapped,
+  useEventListener,
 } from "@liveblocks/react/suspense";
 import React, { useCallback, useMemo, useState } from "react";
 import {
@@ -42,7 +42,11 @@ import { Path } from "./Path";
 import { useDisableScroll } from "@/hooks/useDesableScroll";
 import { useEffect } from "react";
 import { useDeleteLayers } from "@/hooks/useDeleteLayers";
-import { useOrganization } from "@clerk/nextjs";
+import { useOrganization, useAuth } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
+import { LiveKitRoom } from "@livekit/components-react";
+import { toast } from "sonner";
+import Chat from "./Chat";
 
 const MAX_LAYERS = 100;
 
@@ -51,13 +55,69 @@ interface CanvasProps {
 }
 
 const Canvas = ({ boardId }: CanvasProps) => {
+  const x = useSelf((me) => me.info?.id);
+
+  console.log("connectionId", x);
+  const [token, setToken] = useState<string | null>(null);
   // check if the user is an admin
   const { membership } = useOrganization();
   const isAdmin = membership && membership?.role === "org:admin";
+
   //to know what we are doing on the canvas
   const [canvasState, setCanvasState] = useState<CanvasState>({
     mode: CanvasMode.None,
   });
+
+  useEventListener(({ event }) => {
+    //@ts-ignore
+    if (event.type === "RAISE_HAND") {
+      const audio = new Audio("/sounds/raiseHand.mp3");
+      audio.volume = 1;
+      audio.play().catch((err) => {
+        console.warn("Autoplay blocked or audio error:", err);
+      });
+      //@ts-ignore
+      toast.message(`${event.name} raised hand`);
+      //@ts-ignore
+    }
+  });
+
+  const { user } = useUser();
+
+  useEffect(() => {
+    if (isAdmin) {
+      const unmuteAdmin = async () => {
+        try {
+          await fetch("/api/update-participant", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              boardId,
+              identity: user?.id,
+              canPublish: true,
+            }),
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      };
+
+      unmuteAdmin();
+    }
+  }, [isAdmin, boardId, user?.id]);
+
+  //livekit
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const res = await fetch(
+        `/api/livekit-token?userId=${x}&userName=${user?.firstName}&roomName=${boardId}`
+      );
+      const data = await res.json();
+      setToken(data.token);
+    };
+    fetchToken();
+  }, [boardId, x, user?.firstName]);
 
   //to know where we are on the canvas (user view)
   const [camera, setCamera] = useState<Camera>({ x: 0, y: 0 });
@@ -351,6 +411,31 @@ const Canvas = ({ boardId }: CanvasProps) => {
     [lastUsedColor]
   );
 
+  const insertImage = useMutation(
+    ({ storage, setMyPresence }, src: string, position: Point) => {
+      const layers = storage.get("layers");
+      const layerIds = storage.get("layerIds");
+
+      if (layers.size >= MAX_LAYERS) return;
+
+      const id = nanoid();
+      layers.set(
+        id,
+        new LiveObject({
+          type: LayerType.Image,
+          x: position.x,
+          y: position.y,
+          width: 200,
+          height: 200,
+          src,
+        })
+      );
+      layerIds.push(id);
+      setMyPresence({ selection: [id] }, { addToHistory: true });
+    },
+    []
+  );
+
   const onPointerUp = useMutation(
     ({}, e) => {
       //to know where the user is looking at
@@ -435,41 +520,80 @@ const Canvas = ({ boardId }: CanvasProps) => {
     },
     [history]
   );
-  // so we can undo using the shortcut ctrl + z and redo using ctrl + shift + z
-
+  // so we can undo using the shortcut ctrl + z and redo using ctrl + shift + z and paste copied image
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
+      // Undo/Redo
       switch (e.key) {
         case "Z":
         case "z": {
-          if (e.ctrlKey || e.metaKey) {
+          if ((e.ctrlKey || e.metaKey) && isAdmin) {
             e.preventDefault();
             if (e.shiftKey) {
               history.redo();
             } else {
               history.undo();
             }
-            break;
           }
+          break;
+        }
+      }
+    }
+
+    // ✅ Handle paste image
+    function onPaste(e: ClipboardEvent) {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      //@ts-ignore
+      for (const item of items) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (!file) return;
+
+          const reader = new FileReader();
+          reader.onload = () => {
+            const imageData = reader.result as string;
+
+            // Calculate center of viewport adjusted by camera
+            const x = window.innerWidth / 2 - camera.x;
+            const y = window.innerHeight / 2 - camera.y;
+
+            insertImage(imageData, { x, y }); //Pass position
+          };
+          reader.readAsDataURL(file);
         }
       }
     }
 
     document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("paste", onPaste);
 
     return () => {
       document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("paste", onPaste);
     };
-  }, [history]);
+  }, [history, isAdmin, insertImage, camera]);
 
   return (
     <main className="w-full h-full relative bg-neutral-100 touch-none">
       <Info boardId={boardId} />
-      <Participants />
+      <LiveKitRoom
+        token={token!}
+        serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL!}
+        connect
+        audio
+        video={false}
+        data-lk-theme="default"
+      >
+        <Participants isAdmin={isAdmin ? true : false} roomId={boardId} />
+      </LiveKitRoom>
+      <Chat />
       {isAdmin && (
         <>
           {" "}
           <Toolbar
+            camera={camera}
+            insertImage={insertImage}
             canvasState={canvasState}
             setCanvasState={setCanvasState}
             undo={history.undo}
@@ -480,6 +604,7 @@ const Canvas = ({ boardId }: CanvasProps) => {
           <SelectionTools camera={camera} setLastUsedColor={setLastUsedColor} />
         </>
       )}
+
       <svg
         onWheel={onWheel}
         onPointerMove={onPointerMove}

@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useOrganization } from "@clerk/nextjs";
 
 interface FooterProps {
   timeAgo: string;
@@ -18,6 +19,8 @@ const Footer = ({
   onClick,
   disabled,
 }: FooterProps) => {
+  const { membership } = useOrganization();
+  const isAdmin = membership && membership?.role === "org:admin";
   const handleClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
     e.preventDefault();
