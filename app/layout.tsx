@@ -4,8 +4,6 @@ import "./globals.css";
 import { ConvexClientProvider } from "@/providers/convex-client-provider";
 import { Toaster } from "@/components/ui/Sonner";
 import { ModalProvider } from "@/providers/modalProvider";
-import { Suspense } from "react";
-import { Loading } from "@/components/auth/loading";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {

@@ -10,7 +10,6 @@ import { MoreHorizontal } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { toast } from "sonner";
-import { useBroadcastEvent } from "@liveblocks/react";
 
 interface BoardCardProps {
   title: string;
@@ -34,7 +33,6 @@ const BoardCard = ({
   isFavorite,
 }: BoardCardProps) => {
   const { userId } = useAuth();
-  const broadcastEvent = useBroadcastEvent();
 
   //to check the owner of the board
   const authorLabel = userId === authorId ? "You" : authorName;
@@ -60,7 +58,7 @@ const BoardCard = ({
           {/* for the hovering effect */}
           <Overlay />
           {/* for the operations on the board */}
-          <Actions broadcastEvent={broadcastEvent} id={id} title={title}>
+          <Actions id={id} title={title}>
             <button className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity px-3 py-2 outline-none">
               <MoreHorizontal className="text-white opacity-75 hover:opacity-100 transition-opacity" />
             </button>
