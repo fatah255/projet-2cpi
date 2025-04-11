@@ -47,14 +47,22 @@ const Chat = () => {
           <MessageCircle width={50} height={50} />
         </Button>
       </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
+
+      <SheetContent
+        side="right"
+        className="flex flex-col h-full p-0 overflow-hidden"
+      >
+        <SheetHeader className="p-4 border-b">
           <SheetTitle>Chat</SheetTitle>
-          <SheetDescription>
-            <ChatMessages setMessages={setMessages} messages={messages} />
-            <ChatInput setMessages={setMessages} />
-          </SheetDescription>
         </SheetHeader>
+
+        <div className="flex-1 overflow-y-auto px-4 py-2">
+          <ChatMessages messages={messages} setMessages={setMessages} />
+        </div>
+
+        <div className="border-t p-4">
+          <ChatInput setMessages={setMessages} />
+        </div>
       </SheetContent>
     </Sheet>
   );
