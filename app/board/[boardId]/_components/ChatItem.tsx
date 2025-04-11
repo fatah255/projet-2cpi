@@ -85,7 +85,7 @@ export const ChatItem = ({ message, setMessages }: ChatItemProps) => {
     form.reset({
       content: message.content,
     });
-  }, [message.content]);
+  }, [message.content, form]);
 
   const fileType = message.fileUrl?.split(".").pop();
 
