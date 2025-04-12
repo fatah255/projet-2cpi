@@ -8,13 +8,6 @@ body,
   height: 100%;
 }
 
-html,
-body,
-#__next {
-  height: 100%;
-  overflow: hidden; /* optional */
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
